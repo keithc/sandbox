@@ -7,22 +7,37 @@
 			body {
 				font: 10px Verdana,Geneva,Arial,Helvetica,sans-serif;
 				margin: 11px;
+				
 			}
 			#canvas { 
 				width:300px;
 				height:300px; 
-				float:left; 
+				display:block; 
+				margin-left:auto; 
+				margin-right:auto; 
+				background:lightgrey; 
 			}
-			.headerMenuBar { 
-				display:inline; 
-				padding-left:10px; 
+			/* controls */
+						
+			.infoBox { 
+				color:black; 
+				font-size:10px; 
+				line-height:40px; 
+				padding:10px; 
+				border-right: 1px solid lightgrey; 
+				border-left: 1px solid grey; 
+				margin-right: -4px; /* why? */
 			}
-			.headerMenuBar li  {
-				display:inline-block; 
+			.plainButton { 
+				color: black; 
+				text-decoration:none; 
+				font-size:12px; 
 			}
 
 			.button{ 
-				margin-right:5px; 
+				color: white; 
+				text-decoration:none; 
+				margin:5px; 
 				background-color: #339933;
 				-moz-border-radius: 5px;
 				-webkit-border-radius: 5px;
@@ -32,10 +47,6 @@
 			}
 			.button on { 
 			} 
-			.button a { 
-				color:white; 
-				text-decoration:none; 
-			}
 
 			th { 
 				background-color: #CDC; 
@@ -43,11 +54,30 @@
 			th, td { 
 				font-size:11px; 
 			}
-
-			div#textContainer { 
-				left:250px; 
-				float:right; 
+			
+			div.hud { 
+				float:left; 
+				margin:5px; 
 			}
+			div#worldViewContainer{ 
+				margin-left:auto; 
+				margin-right:auto; 
+				text-align:center;
+				background-color:grey; 
+			}
+			
+			div#controls { 
+				background: #deefff; /* Old browsers */
+				background: -moz-linear-gradient(top,  #deefff 0%, #98bede 100%); /* FF3.6+ */
+				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#deefff), color-stop(100%,#98bede)); /* Chrome,Safari4+ */
+				background: -webkit-linear-gradient(top,  #deefff 0%,#98bede 100%); /* Chrome10+,Safari5.1+ */
+				background: -o-linear-gradient(top,  #deefff 0%,#98bede 100%); /* Opera 11.10+ */
+				background: -ms-linear-gradient(top,  #deefff 0%,#98bede 100%); /* IE10+ */
+				background: linear-gradient(top,  #deefff 0%,#98bede 100%); /* W3C */
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede',GradientType=0 ); /* IE6-9 */
+				height:40px; 
+			}
+
 			div.AddContainer { 
 				display:none; 
 			}
@@ -64,15 +94,16 @@
 	<hr>-->
 
 	<canvas id="canvas" width="300", height="300"></canvas> 
-	
-	<div id="textContainer">
+		
 	<!-- world data view table --> 
 	<div id="worldViewContainer">
-		<!--<ul><li data-bind="text:ko.toJSON(timer)"></li><li><a href="#" data-bind="click:toggleTimer">Start/Stop</a></li></ul>-->
-		<ul class="headerMenuBar">
-			<li class="button"><a href="#" data-bind="click:toggleTimer, css: {on: timer().running }">Start/Stop</a></li>
-			Running: <li class="infoBox" data-bind="text:timer().running"></li>
-		</ul>
+		<div id="controls">
+			<a class="plainButton infoBox" href="#" data-bind="click:toggleTimer, css: {on: timer().running }">Start/Stop</a>
+			<span class="infoBox">Running: <span data-bind="text:timer().running"></span></span>
+			<span class="infoBox">Total passengers delivered: <span data-bind=""></span></span>
+		</div> 
+	
+		<!--<ul><li data-bind="text:ko.toJSON(timer)"></li><li><a href="#" data-bind="click:toggleTimer">Start/Stop</a></li></ul>
 		
 		<table>
 			<thead><tr data-bind="template:{name:'tableHeader', foreach:templateColumns}"></tr></thead>
@@ -85,7 +116,7 @@
 		
 		<script id="tableBody" type="text/html">
 			<tr data-bind="foreach: $parent.templateColumns"><td><span data-bind="text:$parent[$data]"></span></td></tr>				
-		</script>
+		</script>-->
 	</div>
 	
 	<div id="statusContainer"></div> 
@@ -216,7 +247,7 @@
 	<!-- Airports view --> 
 	<div id="AirportsViewContainer" class="hud">
 		<h2>Airports(<span data-bind="text: airports().length"></span>)</h2>
-		<table border=1 data-bind="visible: airports().length > 0">
+		<table data-bind="visible: airports().length > 0">
 			<thead><tr>
 				<th>Airport Name</th><th>Gates</th><th>Passengers Waiting</th><th>Location</th><th>Planes at Airport</th><th>Closed?</th><th>Controls</th>
 			</tr></thead>
@@ -371,12 +402,11 @@
 	ko.applyBindings(AirportsModel, document.getElementById("AirportsViewContainer")); 
 	
 	</script> 
-	<!-- **** PlaneS **** --> 
-	<hr/>
+	<!-- **** Planes **** --> 
 	<!-- Planes view --> 
 	<div id="PlanesViewContainer" class="hud">
 		<h2>Planes (<span data-bind="text: planes().length"></span>)</h2>
-		<table border=1 data-bind="visible: planes().length > 0">
+		<table data-bind="visible: planes().length > 0">
 			<thead><tr>
 				<th>Plane name</th><th>Model</th><th>Capacity</th><th>On Board</th><th>Current/Last Airport</th><th>Destination</th><th>Controls</th>
 			</tr></thead>
@@ -664,7 +694,7 @@
 	</script>
 	<script type="text/javascript">
 		$(document).ready(function() {  
-			$("#textContainer").delegate("a[data-ui-type='showhide']","click", function(e) { 
+			$("#hudContainer").delegate("a[data-ui-type='showhide']","click", function(e) { 
 				var $this = $(this); 
 				var $toggleDiv = $($this.parent().next()); 
 				var $toggleSpan= $($this.children("#toggletext"));
