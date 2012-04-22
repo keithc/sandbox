@@ -1,5 +1,8 @@
+<!DOCTYPE HTML> 
 <html>
 	<head>
+		<title>Planes</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
 		<script src="http://cloud.github.com/downloads/SteveSanderson/knockout/knockout-2.0.0.js"></script> 
 		
@@ -7,15 +10,16 @@
 			body {
 				font: 10px Verdana,Geneva,Arial,Helvetica,sans-serif;
 				margin: 11px;
+				background: #f5f3f5; 
 				
 			}
 			#canvas { 
-				width:300px;
+				width:500px;
 				height:300px; 
 				display:block; 
 				margin-left:auto; 
 				margin-right:auto; 
-				background:lightgrey; 
+				background:black; 
 			}
 			/* controls */
 						
@@ -24,8 +28,8 @@
 				font-size:10px; 
 				line-height:40px; 
 				padding:10px; 
-				border-right: 1px solid lightgrey; 
-				border-left: 1px solid grey; 
+				border-right: 1px solid grey; 
+				border-left: 1px solid lightgrey; 
 				margin-right: -4px; /* why? */
 			}
 			.plainButton { 
@@ -33,7 +37,12 @@
 				text-decoration:none; 
 				font-size:12px; 
 			}
-
+			
+			.plainButton.running
+			{
+				background: rgba(77,126,64,0.9); 
+			}
+			
 			.button{ 
 				color: white; 
 				text-decoration:none; 
@@ -48,22 +57,43 @@
 			.button on { 
 			} 
 
+			h2 { 
+				color:white; 
+				background:#036; 
+				padding: 5px 0; 
+				margin-bottom:0px; 
+			}
+			table { 
+				width:100%; 
+				background: white; 
+				text-align:left; 
+				font-size:10px; 
+			}
+			
 			th { 
-				background-color: #CDC; 
+				color:#039; 
+				border-bottom:2px solid #67B;
 			} 
-			th, td { 
-				font-size:11px; 
+			td { 
+				color:#669; 
+				border-bottom: 1px solid lightgrey; 
+			}
+			tbody>tr:hover{ 
+				color:#003; 
+				font-weight:bold; 
+				background: #DDF;
 			}
 			
 			div.hud { 
-				float:left; 
-				margin:5px; 
+				display:inline-block; 
+				vertical-align:top; 
+				width:45%; 
 			}
-			div#worldViewContainer{ 
-				margin-left:auto; 
-				margin-right:auto; 
-				text-align:center;
-				background-color:grey; 
+			
+			#mainContainer { 
+				background : rgba(0,0,32,0.6); 
+				text-align:center; 
+				height:100%; 
 			}
 			
 			div#controls { 
@@ -80,6 +110,15 @@
 
 			div.AddContainer { 
 				display:none; 
+				width:75%; 
+				background:lightgrey; 
+			}
+			
+			div.AddContainer span { 
+				float:left; 
+			}
+			div.AddContainer button { 
+				clear:left; 
 			}
 		</style> 
 	</head>
@@ -93,33 +132,14 @@
 	columns: <span data-bind="text:ko.toJSON(templateColumns)"></span>
 	<hr>-->
 
-	<canvas id="canvas" width="300", height="300"></canvas> 
-		
-	<!-- world data view table --> 
-	<div id="worldViewContainer">
+	<canvas id="canvas" width="500" height="300"></canvas> 
+	<div id="mainContainer">
 		<div id="controls">
-			<a class="plainButton infoBox" href="#" data-bind="click:toggleTimer, css: {on: timer().running }">Start/Stop</a>
+			<a class="plainButton infoBox" href="#" data-bind="click:toggleTimer, css: {running: timer().running }">Start/Stop</a>
 			<span class="infoBox">Running: <span data-bind="text:timer().running"></span></span>
 			<span class="infoBox">Total passengers delivered: <span data-bind=""></span></span>
-		</div> 
-	
-		<!--<ul><li data-bind="text:ko.toJSON(timer)"></li><li><a href="#" data-bind="click:toggleTimer">Start/Stop</a></li></ul>
-		
-		<table>
-			<thead><tr data-bind="template:{name:'tableHeader', foreach:templateColumns}"></tr></thead>
-			<tbody data-bind="template:{name:'tableBody', foreach:selectedMenuData}"</tbody> 
-		</table>
-		
-		<script id="tableHeader" type="text/html">
-			<td><span data-bind="text:$data"></span></td>
-		</script>
-		
-		<script id="tableBody" type="text/html">
-			<tr data-bind="foreach: $parent.templateColumns"><td><span data-bind="text:$parent[$data]"></span></td></tr>				
-		</script>-->
-	</div>
-	
-	<div id="statusContainer"></div> 
+		</div> 	
+		<div id="statusContainer"></div> 
 	
 	<script type="text/javascript">	
 	//*** *** Game Loop *** *** 
@@ -149,7 +169,7 @@
 		self.run = function() { 
 			if (self.running())
 			{
-				$("#statusContainer").append("."); 
+				//$("#statusContainer").append("."); 
 				for (var key in self.objectsToUpdate) //maybe just hold the id's of the objects? 
 				{
 					var obj = self.objectsToUpdate[key];
@@ -221,7 +241,6 @@
 	//doing this breaks the prototypes since they're looking at 'this', which is the domWindow from window.setInterval
 	//var gameStep = window.setInterval(wvmodel.timer().run, 1000) ; 
 	
-	
 	//string.format equiv
 	String.format = String.prototype.format = function() {
     var i=0;
@@ -249,35 +268,31 @@
 		<h2>Airports(<span data-bind="text: airports().length"></span>)</h2>
 		<table data-bind="visible: airports().length > 0">
 			<thead><tr>
-				<th>Airport Name</th><th>Gates</th><th>Passengers Waiting</th><th>Location</th><th>Planes at Airport</th><th>Closed?</th><th>Controls</th>
+				<th>Airport Name</th><th>Passengers Waiting</th><th>Location</th><th>Planes at Airport</th><th>Closed?</th><th>Controls</th>
 			</tr></thead>
 			<tbody data-bind="foreach: airports">
 				<tr>
-					<td><span data-bind="text: name" /></td>
-					<td><span data-bind="text: gates" /></td>
+					<td><span data-bind="text: name"></span></td>
+					<!--<td><span data-bind="text: gates"></span></td>-->
 					<td data-bind="text: passengersWaiting"></td>
 					<td data-bind="text: location"></td>
-					<td data-bind="text: PlanesAtAirport().length"</td>
+					<td data-bind="text: PlanesAtAirport().length"></td>
 					<td data-bind="text: closed"></td>
 					<td><a href="#" data-bind="click: $root.openOrClose">Close/Open</a> | 
 					<a href="#" data-bind="click: $root.removeAirport">Remove</a></td>
 				</tr>    
 			</tbody>
 		</table>
-		<span><a href="#" data-ui-type="showhide"><span id="toggletext">Show</span> New Airport Form</a></span> 
+		<span><a href="#" data-ui-type="showhide"><span class="toggletext">Show</span> New Airport Form</a></span> 
 		<div class="AddContainer">
 			<h2>Enter a New Airport</h2>
 			<form data-bind="submit:addAirport">
-				<table>
-					<td><input data-bind="value: newName" placeholder="Airport Name" /></td>
-					<td><input data-bind="value: newGates" placeholder="Airport Gates" /></td><!--select-->
-					<td><input data-bind="value: newStartingPassengers" placeholder="Passengers to start with" /></td><!--select/consPlane-->
-					<td><input data-bind="value: newpassengerGainRate" placeholder="Passengers Gained/sec" /></td><!--select/consPlane-->
-					<!--<td><select data-bind="options: $root.availableMeals, value: meal, optionsText: 'mealName'"></select></td>-->
-					<td><input data-bind="value: newXLoc" placeholder="X location"/></td><!--validate-->
-					<td><input data-bind="value: newYLoc" placeholder="Y location"/></td><!--validate-->
-					<!-- enable = funds for this Plane < my funds   enable: planes().length < 5--> 
-				</table>
+				<span><input data-bind="value: newName" placeholder="Airport Name" /></span>
+				<span><input data-bind="value: newGates" placeholder="Airport Gates" /></span><!--select-->
+				<span><input data-bind="value: newStartingPassengers" placeholder="Passengers to start with" /></span><!--select/consPlane-->
+				<span><input data-bind="value: newpassengerGainRate" placeholder="Passengers Gained/sec" /></span><!--select/consPlane-->
+				<span><input data-bind="value: newXLoc" placeholder="X location"/></span><!--validate-->
+				<span><input data-bind="value: newYLoc" placeholder="Y location"/></span><!--validate-->
 				<button type="submit">Add Airport</button>
 			</form>
 			<button data-bind="click: saveAirports(), enable: airports().length > 0">Save To Local Storage</button>
@@ -412,8 +427,8 @@
 			</tr></thead>
 			<tbody data-bind="foreach: planes">
 				<tr>
-					<td><span data-bind="text: name" /></td>
-					<td><span data-bind="text: model" /></td>
+					<td><span data-bind="text: name" ></span></td>
+					<td><span data-bind="text: model" ></span></td>
 					<!--<td><select data-bind="options: $root.availableMeals, value: meal, optionsText: 'mealName'"></select></td>-->
 					<td data-bind="text: capacity"></td> 
 					<td data-bind="text: passengersOnBoard"></td> 
@@ -423,17 +438,14 @@
 				</tr>    
 			</tbody>
 		</table>
-		<span><a href="#" data-ui-type="showhide"><span id="toggletext">Show</span> New Plane Form</a></span> 
+		<span><a href="#" data-ui-type="showhide"><span class="toggletext">Show</span> New Plane Form</a></span> 
 		<div class="AddContainer">
 			<h2>Enter a New Plane</h2>
 			<form data-bind="submit:addPlane">
-				<table>
-					<td><input data-bind="value: newName" placeholder="Plane Name" /></td>
-					<td><input data-bind="value: newModel" placeholder="Plane Model" /></td><!--select-->
-					<!--<td><select data-bind="options: $root.availableMeals, value: meal, optionsText: 'mealName'"></select></td>-->
-					<td><input data-bind="value: newStartAirport" placeholder="Start Airport"/></td><!--select-->
-					<!-- enable = funds for this Plane < my funds   enable: planes().length < 5--> 
-				</table>
+				<span><input data-bind="value: newName" placeholder="Plane Name" /></span>
+				<span><input data-bind="value: newModel" placeholder="Plane Model" /></span>
+				<span><input data-bind="value: newStartAirport" placeholder="Start Airport"/></span>
+			
 				<button type="submit">Add Plane</button>
 			</form>
 			<button data-bind="click: savePlanes(), enable: planes().length > 0">Save To Local Storage</button>
@@ -609,8 +621,9 @@
 
 	<script type="text/javascript"> 
 		AirportsModel.airports.push(new Airport("San Francisco","2",2,10,60,1)); 
-		AirportsModel.airports.push(new Airport("New Orleans","2",10,20,55,1));
-		AirportsModel.airports.push(new Airport("New York","2",17,5,100,2));
+		AirportsModel.airports.push(new Airport("New Orleans","2",20,20,55,1));
+		AirportsModel.airports.push(new Airport("New York","2",29,5,100,2));
+		AirportsModel.airports.push(new Airport("Chicago","2",20,7,100,2));
 		PlanesModel.planes.push(new Plane("PlaneOne","ModelABC", "20", AirportsModel.getAirport("San Francisco"))); 
 		PlanesModel.planes.push(new Plane("PlaneTwo","ModelDDD", "35", AirportsModel.getAirport("New Orleans"))); 
 		PlanesModel.planes.push(new Plane("PlaneThree","ModelDDD", "35", AirportsModel.getAirport("New York"))); 
@@ -621,7 +634,7 @@
 		wvmodel.timer().startTimer();
 		
 	</script>
-	</div> <!--text-->
+
 	<script type="text/javascript">
 	var _canvas, _canvasWidth, _canvasHeight, _context; //global canvas vars
 	var _scaleValue = 12; //temp, otherwise make the planes much faster
@@ -668,7 +681,7 @@
 			//temp - for scaling
 			var x= item.xLoc*_scaleValue;
 			var y= item.yLoc*_scaleValue; 
-			drawDot(x, y, "#00F"); 
+			drawDot(x, y, "#FFFF00"); 
 			writeCanvasText(item.name(), "", x + (1.5), y + (1.5));
 		});
 	}
@@ -678,7 +691,7 @@
 			//temp - for scaling
 			var x= item.currentXLoc*_scaleValue;
 			var y= item.currentYLoc*_scaleValue; 
-			drawDot(x, y, "#F00"); 
+			drawDot(x, y, "#00FF00"); 
 			writeCanvasText(item.name(), "8px san-serif", x+(1.5), y-(5.5)); 
 		});
 	}
@@ -691,18 +704,20 @@
 	}
 	initCanvas(); 
 	drawWorldObjects();  
-	</script>
-	<script type="text/javascript">
-		$(document).ready(function() {  
-			$("#hudContainer").delegate("a[data-ui-type='showhide']","click", function(e) { 
-				var $this = $(this); 
-				var $toggleDiv = $($this.parent().next()); 
-				var $toggleSpan= $($this.children("#toggletext"));
-				
-				$toggleSpan.text($toggleSpan.text()==="Show" ? "Hide" : "Show" ); 		
-				$toggleDiv.toggle()
-			} ) ;
-		});
+
+	//ui binds
+	$(document).ready(function() {  
+		$("#mainContainer").delegate("a[data-ui-type='showhide']","click", function(e) { 
+			e.preventDefault(); 
+			var $this = $(this); 
+			var $toggleDiv = $($this.parent().next()); 
+			var $toggleSpan= $($this.children(".toggletext"));
+			
+			$toggleSpan.text($toggleSpan.text()==="Show" ? "Hide" : "Show" ); 					
+			$toggleDiv.toggle(); 
+		} ) ;
+	});
 	</script> 
+	</div> <!-- mainContainer -->
 </body>
 </html>
