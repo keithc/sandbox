@@ -8,10 +8,19 @@
 		
 		<style type="text/css">
 			body {
-				font: 10px Verdana,Geneva,Arial,Helvetica,sans-serif;
+				font-size:10px; 
+				font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
 				margin: 11px;
+				color: #565656; 
 				background: #f5f3f5; 
 				
+			}
+			a, a.visited { 
+				text-decoration: none; 
+				color: #507AA5; 
+			}
+			a:hover { 
+				color: #222;
 			}
 			#canvas { 
 				width:500px;
@@ -27,35 +36,55 @@
 				color:black; 
 				font-size:10px; 
 				line-height:40px; 
-				padding:10px; 
+				padding:0 10px 0 10px; 
 				border-right: 1px solid grey; 
-				border-left: 1px solid lightgrey; 
-				margin-right: -4px; /* why? */
+				min-width:100px; 
+				display:inline-block; 
+				float:left; 
 			}
+			.infoList {
+				max-height:40px; 
+				overflow:hidden; 
+				float:right; 
+			}
+			.infoList ul { 
+				height:120px; 
+				margin:0px; 
+				position:absolute; 
+				background:white; 
+				top:230px; 
+				right:20px; 
+				padding: 0 5px 0 5px; 
+				
+			}
+			.infoList li { 
+				list-style-type:none;
+			}
+			
 			.plainButton { 
-				color: black; 
 				text-decoration:none; 
 				font-size:12px; 
+				font-weight:bold;
+				width:100px; 
+				display:inline-block; 
+				padding: 0 10px 0 10px; 
+				background-color:#f5f5f5;
+				border:2px solid #360;
+				border-radius:3px; 
+				line-height:24px; 
+			}
+			
+			.plainButton:hover { 
+				background: rgba(124,171,109,0.9); 
+				color:black; 
 			}
 			
 			.plainButton.running
 			{
 				background: rgba(77,126,64,0.9); 
+				color:black; 
 			}
-			
-			.button{ 
-				color: white; 
-				text-decoration:none; 
-				margin:5px; 
-				background-color: #339933;
-				-moz-border-radius: 5px;
-				-webkit-border-radius: 5px;
-				border: 2px solid #1F5C1F;
-				padding: 5px;
-				
-			}
-			.button on { 
-			} 
+
 
 			h2 { 
 				color:white; 
@@ -71,16 +100,13 @@
 			}
 			
 			th { 
-				color:#039; 
 				border-bottom:2px solid #67B;
 			} 
 			td { 
-				color:#669; 
 				border-bottom: 1px solid lightgrey; 
 			}
 			tbody>tr:hover{ 
 				color:#003; 
-				font-weight:bold; 
 				background: #DDF;
 			}
 			
@@ -91,9 +117,11 @@
 			}
 			
 			#mainContainer { 
-				background : rgba(0,0,32,0.6); 
+				background : rgba(32,32,64,0.6); 
 				text-align:center; 
 				height:100%; 
+				margin-bottom:20px; 
+				padding-bottom:10px; 
 			}
 			
 			div#controls { 
@@ -120,6 +148,9 @@
 			div.AddContainer button { 
 				clear:left; 
 			}
+			div.clear { 
+				clear: both; 
+			}
 		</style> 
 	</head>
 <body>
@@ -135,12 +166,13 @@
 	<canvas id="canvas" width="500" height="300"></canvas> 
 	<div id="mainContainer">
 		<div id="controls">
-			<a class="plainButton infoBox" href="#" data-bind="click:toggleTimer, css: {running: timer().running }">Start/Stop</a>
-			<span class="infoBox">Running: <span data-bind="text:timer().running"></span></span>
-			<span class="infoBox">Total passengers delivered: <span data-bind=""></span></span>
+			<div class="infoBox"><a class="plainButton" href="#" data-bind="click:toggleTimer, css: {running: timer().running }"><span data-bind="text: startButtonText"></span></a></div>
+			<div class="infoBox">Total passengers delivered: <span data-bind="">zzz</span></div>
+			<div class="infoBox infoList"> <ul id="ticker" data-bind="foreach: mostRecentEvents"><li><span data-bind="text:msg"></span>-<span data-bind="text: timestamp"></span></li></ul></div>
+					
 		</div> 	
 		<div id="statusContainer"></div> 
-	
+	<div class="clear"></div>
 	<script type="text/javascript">	
 	//*** *** Game Loop *** *** 
 	function gameTimer() { 
@@ -149,7 +181,7 @@
 		self.running = ko.observable(false); 
 		self.startTime = ko.observable(null); 
 		self.lastStartStop = ko.observable(null); 
-		
+
 		self.timerId = null; 
 		self.startTimer = function() { 
 			var instance = this; //for scoping the this - otherwise, it's the DOMWindow (window.setInterval)
@@ -200,19 +232,54 @@
 		self.objectsToUpdate = {  }; 
 	}; 
 	
+	var eventBox = new ko.subscribable(); //event listener
 	
 	function WorldViewModel () {
 		var self = this; 
 		//Game runner
 		self.timer = ko.observable(new gameTimer()) ; 
 		self.toggleTimer = function() { self.timer().toggle(); } 
-		
+		self.startButtonText = ko.computed ( function() { 
+			return (self.timer().running() ? '<< Stop >>' : ' >> Start <<') ;
+		});
 		//Data
 		self.menuItems = ['Home','Planes','Airports','Passengers', 'Companies'];
 		self.selectedMenuItem = ko.observable("Home"); 
 		self.selectedMenuData = ko.observableArray(); 
 		
-	
+		//events
+		self.updateTicker = function() { 
+			//console.log("Update fired: " + $("#ticker").children().length); 
+			var $ticker = $("#ticker"); 
+			var counter=0; 
+			$.each($ticker.children(), function(index,value) {
+				if (counter===3) 
+				{
+					return false; 
+				}
+				var height = $(value).height(); 
+				console.log("item, value" + index + ',' + height) ; 
+				counter++;
+			} ); 
+			console.log(counter + "<--"); 
+		}
+		
+		self.eventList = ko.observableArray(); 
+		self.mostRecentEvents = ko.computed( function() { 
+			return self.eventList.slice(self.eventList.length-3); //todo: user controlled max
+		});
+		eventBox.subscribe(function(newValue) { 
+			var now = new Date(); 
+			var minutes = now.getMinutes(), seconds = now.getSeconds(); 
+			minutes = minutes < 10 ? '0'+minutes : minutes; 
+			seconds = seconds < 10 ? '0'+seconds : seconds; 
+			self.eventList.push({'msg' : newValue, 'timestamp': minutes + ":" + seconds});  //ko observing this one
+			//since I can't listen for dom element additions reliably, firing the ticker UI functionality synchronously - knockout's bindings on the new item should've already fired
+			//console.log($("#ticker").children().length) ;
+			//self.updateTicker() ; 
+		});
+		
+		
 		self.templateColumns = ko.computed(function() { 
 			//get the first item in the array, build a list of its object properties to serve as columns //TODO: a way to cache this, maybe an array of [menuItem (key), cachedData (value)]
 			if ((self.selectedMenuData() != null) && (self.selectedMenuData()[0] != undefined)) 
@@ -312,7 +379,7 @@
 		self.yLoc = yLoc;
 		self.passengersWaiting = ko.observable(startingPassengers); 
 		self.closed = ko.observable(false); 
-		self.PassengersReady = false; // use to ask for a Plane pickup
+		//self.passengersReady = false; // use to ask for a Plane pickup?
 		 
 		
 		self.location = ko.computed(function() { 
@@ -320,8 +387,8 @@
 		}); 
 		
 		self.gatesAvailable = ko.computed(function() {
-			var PlanesOnHand = 0; //go get this
-			return self.gates > self.PlanesOnHand; 
+			var planesOnHand = 0; //TODO: go get this
+			return self.gates > self.planesOnHand; 
 		});
 		
 		self.gainPassengers = function() { 
@@ -336,12 +403,12 @@
 		};
 		
 		self.PlanesAtAirport = ko.computed(function() { 
-			return PlanesModel.getPlanesAtAirport(self.name()); 
+			return planesModel.getPlanesAtAirport(self.name()); 
 		} );
 		
 		//semi-override
 		self.getDistanceToAirportName = function(destinationAirportName) {
-			var destAirport = AirportsModel.getAirport(destinationAirportName); 
+			var destAirport = airportsModel.getAirport(destinationAirportName); 
 			return self.getDistanceToAirport(destAirport); 
 		}
 		
@@ -413,8 +480,8 @@
 			return otherAirports[randNum]; 
 		};
 	};
-	var AirportsModel = new AirportsViewModel; 
-	ko.applyBindings(AirportsModel, document.getElementById("AirportsViewContainer")); 
+	var airportsModel = new AirportsViewModel; 
+	ko.applyBindings(airportsModel, document.getElementById("AirportsViewContainer")); 
 	
 	</script> 
 	<!-- **** Planes **** --> 
@@ -423,13 +490,12 @@
 		<h2>Planes (<span data-bind="text: planes().length"></span>)</h2>
 		<table data-bind="visible: planes().length > 0">
 			<thead><tr>
-				<th>Plane name</th><th>Model</th><th>Capacity</th><th>On Board</th><th>Current/Last Airport</th><th>Destination</th><th>Controls</th>
+				<th>Plane name</th><th>Capacity</th><th>On Board</th><th>Current/Last Airport</th><th>Destination</th><th>Controls</th>
 			</tr></thead>
 			<tbody data-bind="foreach: planes">
 				<tr>
 					<td><span data-bind="text: name" ></span></td>
-					<td><span data-bind="text: model" ></span></td>
-					<!--<td><select data-bind="options: $root.availableMeals, value: meal, optionsText: 'mealName'"></select></td>-->
+				<!--	<td><span data-bind="text: model" ></span></td>-->
 					<td data-bind="text: capacity"></td> 
 					<td data-bind="text: passengersOnBoard"></td> 
 					<td data-bind="if:currentAirport()"><span data-bind="text:currentAirport().name"></span></td> 
@@ -443,9 +509,8 @@
 			<h2>Enter a New Plane</h2>
 			<form data-bind="submit:addPlane">
 				<span><input data-bind="value: newName" placeholder="Plane Name" /></span>
-				<span><input data-bind="value: newModel" placeholder="Plane Model" /></span>
-				<span><input data-bind="value: newStartAirport" placeholder="Start Airport"/></span>
-			
+				<!--<span><input data-bind="value: newModel" placeholder="Plane Model" /></span>-->
+				<span><input data-bind="value: newStartAirport" placeholder="Start Airport"/></span>		
 				<button type="submit">Add Plane</button>
 			</form>
 			<button data-bind="click: savePlanes(), enable: planes().length > 0">Save To Local Storage</button>
@@ -458,7 +523,7 @@
 		var self=this; 
 		self.name = ko.observable(name); 
 		self.model = ko.observable(model); 
-		self.speed = 20; //todo: base on model
+		self.speed = 20; //todo: base on model, todo:use
 		self.purchaseDate = ""; 
 		self.startAirport = startAirport; 
 		self.currentAirport = ko.observable(startAirport);
@@ -470,6 +535,18 @@
 		self.capacity = capacity; 
 		self.passengersOnBoard = ko.observable(5); 
 		self.travelPoints = []; 
+		//event publish when arriving somewhere
+		self.currentAirport.subscribe(function (newAirport) {
+		//	console.log("firing update for " + self.name()) ; 
+			eventBox.notifySubscribers(self.name() + " :: landing at " + newAirport.name()); 
+			
+		}, self);
+
+		self.destinationAirport.subscribe(function (newDestinationAirport) { 
+			if (newDestinationAirport) { 
+				eventBox.notifySubscribers(self.name() + " :: departing for " + newDestinationAirport.name()); 
+			};
+		}, self); 
 		
 		self.condition = ko.computed(function() { 
 			var repairDuration = 10 - self.lastRepairDate; //0 needs to be world calendar date
@@ -491,8 +568,8 @@
 				if (!self.destinationAirport()) 
 				{
 					//find a destination
-					self.destinationAirport(AirportsModel.findRandomDestinationAirport(self.currentAirport().name())); 
-					console.log(self.name() + " - now departing for " + self.destinationAirport().name()); 
+					self.destinationAirport(airportsModel.findRandomDestinationAirport(self.currentAirport().name())); 
+				//	console.log(self.name() + " - now departing for " + self.destinationAirport().name()); 
 				}
 				//if we have't reached it yet, keep going
 				if (self.destinationAirport() && self.currentAirport().name() != self.destinationAirport().name()) 
@@ -543,9 +620,8 @@
 					}
 				}
 			}
-			//if (AirportsModel.getAirport(self.startAirport)
-			//pickup/move Passengers
-			
+			//if (airportsModel.getAirport(self.startAirport)
+			//pickup/move Passengers	
 		}
 	
 	};
@@ -595,8 +671,8 @@
 			}); 				
 		}; 
 	};
-	var PlanesModel = new PlanesViewModel; 
-	ko.applyBindings(PlanesModel, document.getElementById("PlanesViewContainer")); 
+	var planesModel = new PlanesViewModel; 
+	ko.applyBindings(planesModel, document.getElementById("PlanesViewContainer")); 
 	
 	//bresenham's line algorithm
 	function bline(x0, y0, x1, y1) {
@@ -617,25 +693,28 @@
 	  }
 	  return points; 
 	}
-	</script> 
 
-	<script type="text/javascript"> 
-		AirportsModel.airports.push(new Airport("San Francisco","2",2,10,60,1)); 
-		AirportsModel.airports.push(new Airport("New Orleans","2",20,20,55,1));
-		AirportsModel.airports.push(new Airport("New York","2",29,5,100,2));
-		AirportsModel.airports.push(new Airport("Chicago","2",20,7,100,2));
-		PlanesModel.planes.push(new Plane("PlaneOne","ModelABC", "20", AirportsModel.getAirport("San Francisco"))); 
-		PlanesModel.planes.push(new Plane("PlaneTwo","ModelDDD", "35", AirportsModel.getAirport("New Orleans"))); 
-		PlanesModel.planes.push(new Plane("PlaneThree","ModelDDD", "35", AirportsModel.getAirport("New York"))); 
-		
-		//what are we watching? 
-		wvmodel.timer().objectsToUpdate = {"Airports": AirportsModel.airports(), "Planes" : PlanesModel.planes()}; 
-		//start me up
-		wvmodel.timer().startTimer();
+	airportsModel.airports.push(new Airport("San Francisco","2",2,10,60,1)); 
+	airportsModel.airports.push(new Airport("New Orleans","2",20,20,55,1));
+	airportsModel.airports.push(new Airport("New York","2",29,5,100,2));
+	airportsModel.airports.push(new Airport("Chicago","2",20,7,100,2));
+	planesModel.planes.push(new Plane("PlaneOne","ModelABC", "20", airportsModel.getAirport("San Francisco"))); 
+	planesModel.planes.push(new Plane("PlaneTwo","ModelDDD", "35", airportsModel.getAirport("New Orleans"))); 
+	planesModel.planes.push(new Plane("PlaneThree","ModelDDD", "35", airportsModel.getAirport("New York"))); 
+	
+	//what are we watching? 
+	wvmodel.timer().objectsToUpdate = {"Airports": airportsModel.airports(), "Planes" : planesModel.planes()}; 
+	
+	//event listener
+	
+	
+	//start me up
+	wvmodel.timer().startTimer();
 		
 	</script>
 
 	<script type="text/javascript">
+	//canvas section
 	var _canvas, _canvasWidth, _canvasHeight, _context; //global canvas vars
 	var _scaleValue = 12; //temp, otherwise make the planes much faster
 	function initCanvas() {
@@ -676,7 +755,7 @@
 	
 	function drawAirports()
 	{
-		$.each(AirportsModel.airports(), function (index, item) {
+		$.each(airportsModel.airports(), function (index, item) {
 			//console.log("drawing: " + item.name()); 
 			//temp - for scaling
 			var x= item.xLoc*_scaleValue;
@@ -687,7 +766,7 @@
 	}
 	function drawPlanes() 
 	{
-		$.each(PlanesModel.planes(), function (index, item) {
+		$.each(planesModel.planes(), function (index, item) {
 			//temp - for scaling
 			var x= item.currentXLoc*_scaleValue;
 			var y= item.currentYLoc*_scaleValue; 
@@ -716,6 +795,18 @@
 			$toggleSpan.text($toggleSpan.text()==="Show" ? "Hide" : "Show" ); 					
 			$toggleDiv.toggle(); 
 		} ) ;
+		
+		//initTicker() ; 
+
+		function initTicker() { 
+			var speed=700, pause=3500; 
+			var last = $('ul#ticker li:last').hide().remove; 
+			$('ul#ticker').prepend(last); 
+			$('ul#ticker li:first').slideDown('slow'); 
+			
+		}
+		
+	
 	});
 	</script> 
 	</div> <!-- mainContainer -->
