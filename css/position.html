@@ -1,0 +1,86 @@
+<html> 
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+	<style type="text/css">
+		body { 
+			font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+			font-size: 12px; 
+		
+		} 
+		
+		div { color:#CCC; padding:5px; } 
+		#main { background: #000; padding: 5px;  }
+		#before { background: #666 } 
+		#div1 { background: #CC0000 }
+		#div2 { background: #000099 } 
+		#div3 { background: #339933 }
+		#after { background: #9933CC} 
+		
+		.positionStatic { position: static} 
+		.positionRelative { position: relative }
+		.positionAbsolute { position: absolute }
+		
+		.floatRight { float: right; width:25%;} 
+		.floatLeft { float: left; width:25%;}
+		.floatNone { float: none; width:100%;}
+		.hidden { display: none } 
+		
+		.clearLeft { clear: left } 
+		.clearRight { clear: right } 
+		.clearBoth { clear: both; }
+		
+	</style> 
+</head>
+	<body>
+		<div id="main"> The wrapper div. It has some padding. 
+			<div id="before">The before div.</div>
+			<div id="div1">This is the first div.</div> 
+			<div id="div2">This is the second div.</div>
+			<div id="div3">This is the third div.</div>
+			<div id="after">The after div.</div> 
+			The end of the wrapper div.
+		</div>
+		<div id="inputBox" class="hidden"> 
+			<input type="radio" name="position" value="positionStatic">position:static
+			<input type="radio" name="position" value="positionRelative">position:relative 
+			<input type="radio" name="position" value="positionAbsolute">position:absolute 
+			<br/>
+			<input type="radio" name="float" value="floatLeft">float:left(width:25%)
+			<input type="radio" name="float" value="floatRight">float:right(width:25%)
+			<input type="radio" name="float" value="floatNone">float:none
+			<br/>
+			<input type="radio" name="clear" value="clearLeft">clear:left
+			<input type="radio" name="clear" value="clearRight">clear:right
+			<input type="radio" name="clear" value="clearBoth">clear:both
+		</div>
+		
+		<script type="text/javascript"> 
+			$(document).ready(function () { 
+				var inputBox = $("#inputBox"); 
+				var divsInMain = $("#main").children("div"); 
+				$(divsInMain).each(function(index,value) { 
+					$(this).append("<br/>" + inputBox.html()); 
+				}); 
+				//maybe....
+				//$.removeClassRegex = function(oldClasses, oldClassRegex) { 
+				//	oldClasses.replace(/ + oldClassRegex +/, '') ; 
+				//} ; 
+				$("#main input").on("click", "", function() { 
+					//find the parent div, replace any existing styles like this one (based on the first part of the name), then append this style
+					var parentDiv = $(this).parent(); 
+					var currentStyles = parentDiv.attr("class");
+					if (currentStyles) { 
+						var removeStyle = this.value.match(/([a-z]+)([A-Z]{1}[a-z]+)/); //get lowercase prefix [1], second part of word following uppercase [2]
+						var prefix = removeStyle[1], suffix=removeStyle[2]; 
+						//in current class, find the style with this prefix and replace its suffix with the new one
+						//if no style exists, just add this class
+						var regpatt = new RegExp(prefix,"g"); 
+						var matchme = currentStyles.match(regPatt); 
+					}
+					parentDiv.addClass(this.value); 
+					//.removeClassRegex(/[a-z]+/).addClass(this.value); 
+				}) 
+			}); 
+		</script> 
+	</body>
+</html>
