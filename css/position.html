@@ -113,7 +113,13 @@
 				
 				//reset individual button - remove styles (form is taking care of clearing the radio buttons) 
 				$("#main input[type=reset]").on("click","",function() { 
-					$(this).closest("div").removeClass().children("span").html(""); 
+					var $this = $(this); 
+					var classToRemove = $this.closest("form").children("input:checked").val()
+					var parDiv = $this.closest("div"); 
+					parDiv.removeClass(classToRemove); 
+					var classes = parDiv.children("span").html(); 
+					parDiv.children("span").html(classes.replace(classToRemove,''));
+					//$(this).closest("div").removeClass(classToRemove).children("span").html().replace(classToRemove,''); 
 					
 				}); 
 				
