@@ -9,7 +9,7 @@
 		} 
 		
 		div { color:#000; padding:5px; } 
-		#main { background: #000; padding: 5px;  }
+		#main { background: #000; color:#fff; padding: 15px;  }
 		#div1 { background: #66CCFF }
 		#div2 { background: #66CC99 } 
 		#div3 { background: #FFCC66 }
@@ -44,8 +44,10 @@
 			color:red;
 		}
 		
+		.classes { background: rgba(255,0,0,0.2) } 
+		
 		form { 
-			margin:1px; 
+			margin:3px; 
 			border: 1px solid grey; 
 			width:auto; 
 			display:table;/*display:table not supported in IE, but floating instead would defeat the purpose of this exercise*/
@@ -55,12 +57,12 @@
 	</style> 
 </head>
 	<body>
-		<div id="main"> The wrapper div. <span data-uitype="classes"></span>
-			<div id="div1">The first div. <span data-uitype="classes"></span></div>
-			<div id="div2">The second div. <span data-uitype="classes"></span></div> 
-			<div id="div3">The third div. <span data-uitype="classes"></span></div>
-			<div id="div4">The fourth div. <span data-uitype="classes"></span></div>
-			<div id="div5">The fifth div. <span data-uitype="classes"></span></div> 
+		<div id="main"> The wrapper div. <span class="classes"></span>
+			<div id="div1">The first div. <span class="classes"></span></div>
+			<div id="div2">The second div. <span class="classes"></span></div> 
+			<div id="div3">The third div. <span class="classes"></span></div>
+			<div id="div4">The fourth div. <span class="classes"></span></div>
+			<div id="div5">The fifth div. <span class="classes"></span></div> 
 			The end of the wrapper div.
 		</div>
 		<div id="inputBox" class="hidden"> 
@@ -68,21 +70,21 @@
 				<input type="radio" name="position" value="positionStatic">position:static
 				<input type="radio" name="position" value="positionRelative">position:relative 
 				<input type="radio" name="position" value="positionAbsolute">position:absolute 
-				<input type="reset" class="btn" name="position" value="clear">
+				<input type="reset" class="btn" name="position" value="reset">
 			</form>
 			<br/>
 			<form>
 				<input type="radio" name="float" value="floatLeft">float:left(width:25%)
 				<input type="radio" name="float" value="floatRight">float:right(width:25%)
 				<input type="radio" name="float" value="floatNone">float:none
-				<input type="reset" class="btn" name="float" value="clear">
+				<input type="reset" class="btn" name="float" value="reset">
 			</form>
 			<br/>
 			<form> 
 				<input type="radio" name="clear" value="clearLeft">clear:left
 				<input type="radio" name="clear" value="clearRight">clear:right
 				<input type="radio" name="clear" value="clearBoth">clear:both
-				<input type="reset" class="btn" name="float" value="clear">
+				<input type="reset" class="btn" name="float" value="reset">
 			</form> 
 		</div>
 		<div class="clearBoth"></div>
@@ -117,7 +119,7 @@
 					var classToRemove = $this.closest("form").children("input:checked").val()
 					var parDiv = $this.closest("div"); 
 					parDiv.removeClass(classToRemove); 
-					var classes = parDiv.children("span").html(); 
+					var classes = parDiv.children("span.classes").html(); 
 					parDiv.children("span").html(classes.replace(classToRemove,''));
 					//$(this).closest("div").removeClass(classToRemove).children("span").html().replace(classToRemove,''); 
 					
