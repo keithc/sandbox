@@ -1,0 +1,108 @@
+<!DOCTYPE HTML> 
+<html lang="en">
+	<head>
+		<title>Language Memory Cards</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<style type="text/css">
+			body {
+				font-size:10px; 
+				font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+				margin: 11px;
+				color: #565656; 
+				background: #f5f3f5; 
+				
+			}
+			.fluid-row { 
+				width: 100%
+			}
+			.card-row { 
+				margin: 10px; 
+			}
+			/*clearfix*/
+			.card-row:before, .card-row:after {
+				display: table;
+				content: "";
+				zoom: 1;
+			}
+			.card { 
+				cursor: pointer; 
+				float: left;
+				width:10%;
+				line-height:70px; /*todo: dynamic height*/
+				
+				border-radius: 3px; 
+				-webkit-border-radius: 3px; 
+				-moz-border-radius: 3px; 
+				
+				min-height:70px; 
+				text-align: center; 
+				
+				margin-left: 3%;
+				
+				background: #333;
+				color:#fff; 
+				
+				-webkit-backface-visibility: hidden;
+				-moz-backface-visibility:    hidden;
+				-ms-backface-visibility:     hidden;
+				
+			}
+			.card .front { 
+				-webkit-transform: rotateY(0deg);
+				
+				-webkit-transition: all .4s ease-in-out;
+				backface-visibilty: hidden; 
+				-webkit-backface-visibility: hidden;
+				-moz-backface-visibility:    hidden;
+				-ms-backface-visibility:     hidden;
+				
+				
+				background:#333; 
+				color: #000; /*todo: dynamic*/
+			}
+			.card.flipped .front { 
+				-webkit-transform: rotateY(180deg);
+			}
+			.card .back {
+				transform: rotateY(-180deg); 
+				-webkit-transform: rotateY(-180deg);
+				
+				-webkit-transform-style: preserve-3d;
+				-webkit-backface-visibility: hidden;
+				-webkit-transition: all .4s ease-in-out;
+				transition: all .4s ease-in-out;
+				
+				background:#fff; 
+				color:#000; 
+			}
+			.card.flipped .back { 
+				-webkit-transform: rotateY(0deg);
+			}
+		</style>
+		<script type="text/javascript">
+			
+			$(document).ready(function () { 
+				//init
+				
+				//ui binds
+				$(".card-row").on("click", ".card", function () { 
+					//console.log(this);
+					var $this = $(this); 
+					$this.toggleClass("flipped"); 
+					} 
+				); 
+			}); 
+		</script>
+	</head>
+	<body>
+		<div class="card-row">
+			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
+			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
+			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
+			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
+			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
+			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
+		</div>
+	</body>
+</html>
