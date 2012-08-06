@@ -26,6 +26,7 @@
 				zoom: 1;
 			}
 			.card { 
+				position: relative; 
 				cursor: pointer; 
 				float: left;
 				width:10%;
@@ -40,55 +41,95 @@
 				
 				margin-left: 3%;
 				
-				background: #333;
+				
 				color:#fff; 
 				
-				-webkit-backface-visibility: hidden;
-				-moz-backface-visibility:    hidden;
-				-ms-backface-visibility:     hidden;
+				-webkit-perspective:600px; /*depth on rotate*/
 				
 			}
 			.card .front { 
-				-webkit-transform: rotateY(0deg);
-				
+				z-index: 10; 
+				-webkit-transform: rotateX(0deg) rotateY(0deg);
+				-o-transition: all .4s ease-in-out;
+				-ms-transition: all .4s ease-in-out;
+				-moz-transition: all .4s ease-in-out;
 				-webkit-transition: all .4s ease-in-out;
+				transition: all .4s ease-in-out;
+			
+				-webkit-transform-style: preserve-3d;
 				backface-visibilty: hidden; 
 				-webkit-backface-visibility: hidden;
 				-moz-backface-visibility:    hidden;
 				-ms-backface-visibility:     hidden;
 				
-				
-				background:#333; 
+				background:#933; 
 				color: #000; /*todo: dynamic*/
 			}
 			.card.flipped .front { 
+				z-index:10; 
 				-webkit-transform: rotateY(180deg);
+
 			}
 			.card .back {
+				z-index:5; 
+				position: absolute; /* top of the .card container */
+				top: 0; 
+				left: 0; 
+			
 				transform: rotateY(-180deg); 
-				-webkit-transform: rotateY(-180deg);
+				-webkit-transform: rotateY(-180deg);				
 				
 				-webkit-transform-style: preserve-3d;
 				-webkit-backface-visibility: hidden;
+				-o-transition: all .4s ease-in-out;
+				-ms-transition: all .4s ease-in-out;
+				-moz-transition: all .4s ease-in-out;
 				-webkit-transition: all .4s ease-in-out;
 				transition: all .4s ease-in-out;
 				
 				background:#fff; 
 				color:#000; 
+				width: 100%; 
 			}
-			.card.flipped .back { 
-				-webkit-transform: rotateY(0deg);
+			.card.flipped .back {
+				z-index:15; 
+				-webkit-transform: rotateX(0deg) rotateY(0deg);
 			}
 		</style>
 		<script type="text/javascript">
 			
 			$(document).ready(function () { 
 				//init
+				function init() { 
+					//vars
+					var languages = ['EN','ES','FR'],
+						languageCaptions = [];
 				
+					//push data  - todo: from file
+					languageCaptions.push ({name:2, color:"#00F", fontColor:"#FFF", translations:[{name: "en", word: "blue"}, {name:"es", word: "azul"}, {name:"fr", word:"bleu"}]}); 
+					languageCaptions.push ({name:2, color:"#0F0", translations:[{name: "en", word: "green"}, {name:"es", word: "verde"}, {name:"fr", word:"vert"}]}); 
+					languageCaptions.push ({name:2, color:"#F00", translations:[{name: "en", word: "red"}, {name:"es", word: "rojo"}, {name:"fr", word:"rouge"}]}); 
+					languageCaptions.push ({name:2, color:"#FFFF00", translations:[{name: "en", word: "yellow"}, {name:"es", word: "amarillo"}, {name:"fr", word:"jaune"}]}); 
+					languageCaptions.push ({name:2, color:"#FF6600", translations:[{name: "en", word: "orange"}, {name:"es", word: "naranja"}, {name:"fr", word:"orange"}]}); 
+					languageCaptions.push ({name:2, color:"#6600FF", translations:[{name: "en", word: "purple"}, {name:"es", word: "morado"}, {name:"fr", word:"pourpre"}]}); 
+					languageCaptions.push ({name:2, color:"#663300", translations:[{name: "en", word: "brown"}, {name:"es", word: "marron"}, {name:"fr", word:"brun"}]}); 
+					
+					//build array of card objects
+					
+				}; 
+				//translations data - todo: load from json
+				var LanguageCaption = function (name, languageTranslations) { 
+					this.name = name; 
+					this.languageTranslations = languageTranslations; 
+				} 
+				// pick a caption entry
+				var Card = function () { 
+				
+				}
+
 				//ui binds
 				$(".card-row").on("click", ".card", function () { 
-					//console.log(this);
-					var $this = $(this); 
+					var $this = $(this); //lose this if just one function
 					$this.toggleClass("flipped"); 
 					} 
 				); 
