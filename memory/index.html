@@ -3,43 +3,101 @@
 	<head>
 		<title>Language Memory Cards</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 		<style type="text/css">
 			body {
-				font-size:10px; 
+				font-size:13px; 
 				font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
 				margin: 11px;
 				color: #565656; 
-				background: #f5f3f5; 
+				background: #f5f3f5;
+				line-height:18px; 
 				
 			}
-			.fluid-row { 
-				width: 100%
+			#outer { 
+				width:980px; 
+				margin: 0 auto; 
 			}
 			.card-row { 
 				margin: 10px; 
+				position: relative; 
+				height:auto; 
+				min-height:100%; 
+				margin:auto; 
 			}
+			/* Large displays */
+			@media (min-width: 1250px) {
+				#outer { 
+					width:95%; 
+					max-width:1400px; 
+				}
+				.card-row {
+					width: 85%;
+				}
+			}
+			/* Landscape tablets */
+			@media (min-width: 768px) and (max-width: 979px) {
+				#outer {
+					width: 95%;
+				}
+				.card-row {
+					width: 69%;
+					padding: 2%;
+				}
+			}
+			
+			/* Portrait tablets */
+			@media (max-width: 767px) {
+				#outer {
+					width: 98%;
+				}
+				.card-row {
+					width: 64%;
+					padding: 2%;
+				}
+				
+			}
+			
+			/* Smartphones */
+			@media (max-width: 480px) {
+				html {
+					-webkit-text-size-adjust: none;
+				}
+				body {
+					font-size: 95%;
+				}
+				#outer {
+					width: 98%;
+				}
+				.card-row {
+					float: none;
+					width: auto;
+					margin: 0;
+					padding: 2%;
+				}
+			}
+			
 			/*clearfix*/
 			.card-row:before, .card-row:after {
 				display: table;
 				content: "";
 				zoom: 1;
 			}
+			
+			/*cards + transforms for flips*/
 			.card { 
 				position: relative; 
 				cursor: pointer; 
 				float: left;
-				width:10%;
+				width:140px;
 				line-height:70px; /*todo: dynamic height*/
-				
-				border-radius: 3px; 
-				-webkit-border-radius: 3px; 
-				-moz-border-radius: 3px; 
 				
 				min-height:70px; 
 				text-align: center; 
 				
 				margin-left: 3%;
+				margin-bottom:10px; 
 				
 				
 				color:#fff; 
@@ -49,6 +107,10 @@
 			}
 			.card .front { 
 				z-index: 10; 
+				border-radius: 5px; 
+				-webkit-border-radius: 5px; 
+				-moz-border-radius: 5px; 
+				
 				-webkit-transform: rotateX(0deg) rotateY(0deg);
 				-o-transition: all .4s ease-in-out;
 				-ms-transition: all .4s ease-in-out;
@@ -64,6 +126,8 @@
 				
 				background:#933; 
 				color: #000; /*todo: dynamic*/
+				
+
 			}
 			.card.flipped .front { 
 				z-index:10; 
@@ -72,6 +136,10 @@
 			}
 			.card .back {
 				z-index:5; 
+				border-radius: 5px; 
+				-webkit-border-radius: 5px; 
+				-moz-border-radius: 5px; 
+
 				position: absolute; /* top of the .card container */
 				top: 0; 
 				left: 0; 
@@ -87,34 +155,65 @@
 				-webkit-transition: all .4s ease-in-out;
 				transition: all .4s ease-in-out;
 				
-				background:#fff; 
-				color:#000; 
+				
 				width: 100%; 
 			}
 			.card.flipped .back {
 				z-index:15; 
 				-webkit-transform: rotateX(0deg) rotateY(0deg);
 			}
+			/* backgrounds */
+			.blue-bg { background-color: #00F;} 
+			.green-bg { background-color: #0F0;} 
+			.red-bg { background-color: #F00;} 
+			.yellow-bg { background-color: #FFFF00;} 
+			.orange-bg { background-color: #FF6600;} 
+			.purple-bg { background-color: #6600FF;} 
+			.brown-bg { background-color: #663300;} 
+
 		</style>
 		<script type="text/javascript">
-			
+			var cards = []; //todo: namespace
 			$(document).ready(function () { 
 				//init
+				
+				
 				function init() { 
 					//vars
 					var languages = ['EN','ES','FR'],
-						languageCaptions = [];
-				
+						languageCaptions = [], 
+						maxCards = 10;
+					var languageLeft = "en"; //todo: user select
+					var languageRight = "es"; 
+					
 					//push data  - todo: from file
-					languageCaptions.push ({name:2, color:"#00F", fontColor:"#FFF", translations:[{name: "en", word: "blue"}, {name:"es", word: "azul"}, {name:"fr", word:"bleu"}]}); 
-					languageCaptions.push ({name:2, color:"#0F0", translations:[{name: "en", word: "green"}, {name:"es", word: "verde"}, {name:"fr", word:"vert"}]}); 
-					languageCaptions.push ({name:2, color:"#F00", translations:[{name: "en", word: "red"}, {name:"es", word: "rojo"}, {name:"fr", word:"rouge"}]}); 
-					languageCaptions.push ({name:2, color:"#FFFF00", translations:[{name: "en", word: "yellow"}, {name:"es", word: "amarillo"}, {name:"fr", word:"jaune"}]}); 
-					languageCaptions.push ({name:2, color:"#FF6600", translations:[{name: "en", word: "orange"}, {name:"es", word: "naranja"}, {name:"fr", word:"orange"}]}); 
-					languageCaptions.push ({name:2, color:"#6600FF", translations:[{name: "en", word: "purple"}, {name:"es", word: "morado"}, {name:"fr", word:"pourpre"}]}); 
-					languageCaptions.push ({name:2, color:"#663300", translations:[{name: "en", word: "brown"}, {name:"es", word: "marron"}, {name:"fr", word:"brun"}]}); 
+					languageCaptions.push ({name:2, style:"blue-bg", color:"#00F", fontColor:"#FFF", translations:[{name: "en", word: "blue"}, {name:"es", word: "azul"}, {name:"fr", word:"bleu"}]}); 
+					languageCaptions.push ({name:2, style:"green-bg", color:"#0F0", translations:[{name: "en", word: "green"}, {name:"es", word: "verde"}, {name:"fr", word:"vert"}]}); 
+					languageCaptions.push ({name:2, style:"red-bg", color:"#F00", translations:[{name: "en", word: "red"}, {name:"es", word: "rojo"}, {name:"fr", word:"rouge"}]}); 
+					languageCaptions.push ({name:2, style:"yellow-bg", color:"#FFFF00", translations:[{name: "en", word: "yellow"}, {name:"es", word: "amarillo"}, {name:"fr", word:"jaune"}]}); 
+					languageCaptions.push ({name:2, style:"orange-bg",  color:"#FF6600", translations:[{name: "en", word: "orange"}, {name:"es", word: "naranja"}, {name:"fr", word:"orange"}]}); 
+					languageCaptions.push ({name:2, style:"purple-bg", color:"#6600FF", translations:[{name: "en", word: "purple"}, {name:"es", word: "morado"}, {name:"fr", word:"pourpre"}]}); 
+					languageCaptions.push ({name:2, style:"brown-bg", color:"#663300", translations:[{name: "en", word: "brown"}, {name:"es", word: "marron"}, {name:"fr", word:"brun"}]}); 
 					
 					//build array of card objects
+					//todo: maxCards -2 since creating a pair? 
+					for (var i = 0; i < maxCards && i < languageCaptions.length; i++){
+						var languageCaption = languageCaptions[i]; 
+						
+						//todo:need undefined checks 
+						var leftTranslation = languageCaption.translations.find(languageLeft); 
+						var rightTranslation = languageCaption.translations.find(languageRight);
+						
+						//build the card pair
+						cards.push(new Card(leftTranslation.word, languageLeft, languageCaption.style, false )) ; 
+						cards.push(new Card(rightTranslation.word, languageRight,languageCaption.style, false )) ; 
+					}
+					
+					//paint UI with card array
+					var container = $(".card-row"); 
+					for (var i = 0; i < cards.length; i++) {
+						addCardElement(container, cards[i]); 
+					}
 					
 				}; 
 				//translations data - todo: load from json
@@ -123,10 +222,25 @@
 					this.languageTranslations = languageTranslations; 
 				} 
 				// pick a caption entry
-				var Card = function () { 
-				
+				var Card = function (text, language, backStyle, flipped) { 
+					this.text = text; 
+					this.language = language;
+					this.backStyle = backStyle; //todo: front style? 					
+					this.flipped = flipped; //probably always false, maybe just init to that 
 				}
-
+				
+				//tmpl this
+				function addCardElement(containerDiv, card) {
+					var html = "<div class='front'>1</div><div class='back " + card.backStyle + "'>" + card.text + "</div>"
+					if (!containerDiv instanceof jQuery) { 
+						containerDiv = $(containerDiv); 
+					}
+					//create a card element, insert the above html and add the correct class
+					$('<div></div>').html(html).appendTo(containerDiv).addClass('card'); 
+				}
+				
+				//todo: wait for user to pick language, etc
+				init(); 
 				//ui binds
 				$(".card-row").on("click", ".card", function () { 
 					var $this = $(this); //lose this if just one function
@@ -134,16 +248,33 @@
 					} 
 				); 
 			}); 
+			
+			Array.prototype.find = function (itemName){
+			for (index in this) {  
+				if (this[index].name === itemName) //TODO: types
+				{
+					return this[index]; 
+				}
+			}
+			return null; 
+			};
+
+			Array.prototype.shuffle = function() {
+			var len = this.length; 
+			var i = len; 
+			while (i--) { 
+				var p = parseInt(Math.random()*len); 
+				var t = this[i];
+				this[i] = this[p];  //swap p & i items
+				this[p] = t; 
+			}
+};
 		</script>
 	</head>
 	<body>
-		<div class="card-row">
-			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
-			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
-			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
-			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
-			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
-			<div class="card"><div class="front">1</div><div class="back">STUFF</div></div>
+		<div id="outer">
+			<div class="card-row">
+			</div>
 		</div>
 	</body>
 </html>
