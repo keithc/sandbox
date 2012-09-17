@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<title>Knockout Regex Tester</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.1.0/knockout-min.js"></script> 
+		
+		<style>
+			body { font-family: helvetica, arial; font-size: 1em; } 
+			input, textarea { font-family: inherit; font-size: inherit;} 
+		</style> 
+	</head>
+	<body>
+		<input data-bind="value:regexPattern, valueUpdate: 'afterkeydown'" name="regexPattern" placeholder="Enter your regex here."><br/>
+		<textarea data-bind="value:stringToTest" name="stringToTest" placeholder="Enter your test string here."></textarea><br/>
+		<span data-bind="text:regexMatch, visible:regexMatch" id="output"></span>
+		<script type="text/javascript">
+			function ViewModel() {
+				var self = this; 
+				self.regexPattern = ko.observable(); 
+				self.stringToTest = ko.observable(); 
+				self.regexMatch = ko.computed(function() { 
+					if (!self.regexPattern() || !self.stringToTest()) {
+						return false; 
+					}
+					//TODO: parse regexPattern on /pattern/modifiers, pass those into the RegExp
+					var regexPattern = new RegExp(self.regexPattern(),"g"); 
+					var match = self.stringToTest().match(regexPattern); 
+					//var replaced = self.stringToTest().replace(regexPattern, "$1"); //TODO: if it has captures? 
+					if (match && match.length > 0) {
+						var myString = self.stringToTest(); 
+						//find each match in the string, highlight it
+						$.each(match, function(idx, value) { 
+							var newval = "!!!" + value + "!!!" ; 
+							myString = myString.replace(value,newval, "g");
+							console.log(idx + " :: " + value + " :: " + myString) ; 
+						
+						});
+						return match[0]; 
+					}
+					return false; 
+				}, self) ; 
+			}
+			ko.applyBindings(new ViewModel()); 
+		</script> 
+	</body>
+</html>
