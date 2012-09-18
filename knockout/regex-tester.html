@@ -7,12 +7,13 @@
 		<style>
 			body { font-family: helvetica, arial; font-size: 1em; } 
 			input, textarea { font-family: inherit; font-size: inherit;} 
+			.highlight { color:red } 
 		</style> 
 	</head>
 	<body>
 		<input data-bind="value:regexPattern, valueUpdate: 'afterkeydown'" name="regexPattern" placeholder="Enter your regex here."><br/>
 		<textarea data-bind="value:stringToTest" name="stringToTest" placeholder="Enter your test string here."></textarea><br/>
-		<span data-bind="text:regexMatch, visible:regexMatch" id="output"></span>
+		<span data-bind="html:regexMatch, visible:regexMatch" id="output"></span>
 		<script type="text/javascript">
 			function ViewModel() {
 				var self = this; 
@@ -23,21 +24,9 @@
 						return false; 
 					}
 					//TODO: parse regexPattern on /pattern/modifiers, pass those into the RegExp
-					var regexPattern = new RegExp(self.regexPattern(),"g"); 
-					var match = self.stringToTest().match(regexPattern); 
-					//var replaced = self.stringToTest().replace(regexPattern, "$1"); //TODO: if it has captures? 
-					if (match && match.length > 0) {
-						var myString = self.stringToTest(); 
-						//find each match in the string, highlight it
-						$.each(match, function(idx, value) { 
-							var newval = "!!!" + value + "!!!" ; 
-							myString = myString.replace(value,newval, "g");
-							console.log(idx + " :: " + value + " :: " + myString) ; 
-						
-						});
-						return match[0]; 
-					}
-					return false; 
+					var rp = new RegExp("(" + self.regexPattern() + ")","g");
+					var repl = self.stringToTest().replace(rp,"<span class='highlight'>$1</span>"); 
+					return repl; 
 				}, self) ; 
 			}
 			ko.applyBindings(new ViewModel()); 
