@@ -7,25 +7,35 @@
 		<style>
 			body { font-family: helvetica, arial; font-size: 1em; } 
 			input, textarea { font-family: inherit; font-size: inherit;} 
-			.highlight { color:red } 
+			.highlight { color:#060; background-color:#C5F7C5; } 
+			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; border: solid 1px #CCC; font-weight:bold; text-decoration:underline}
+			.regex { font-weight:normal; text-decoration:none} 
+			#errorMsg { color:#F00 } 
 		</style> 
 	</head>
 	<body>
 		<input data-bind="value:regexPattern, valueUpdate: 'afterkeydown'" name="regexPattern" placeholder="Enter your regex here."><br/>
 		<textarea data-bind="value:stringToTest" name="stringToTest" placeholder="Enter your test string here."></textarea><br/>
-		<span data-bind="html:regexMatch, visible:regexMatch" id="output"></span>
+		<div class="box">Raw string, matches in <span class="highlight">green</span>:<br/><span class="regex" data-bind="html:regexMatch, visible:regexMatch" id="output"></span></div>
+		<span data-bind="html:errorMsg" id="errorMsg"></span>
 		<script type="text/javascript">
 			function ViewModel() {
 				var self = this; 
 				self.regexPattern = ko.observable(); 
 				self.stringToTest = ko.observable(); 
+				self.errorMsg = ko.observable(); 
 				self.regexMatch = ko.computed(function() { 
 					if (!self.regexPattern() || !self.stringToTest()) {
 						return false; 
 					}
 					//TODO: parse regexPattern on /pattern/modifiers, pass those into the RegExp
-					var rp = new RegExp("(" + self.regexPattern() + ")","g");
-					var repl = self.stringToTest().replace(rp,"<span class='highlight'>$1</span>"); 
+					try { 
+						var rp = new RegExp("(" + self.regexPattern() + ")","g");
+						var repl = self.stringToTest().replace(rp,"<span class='highlight'>$1</span>"); 
+					}
+					catch(err){ 
+						self.errorMsg(err.message); 
+					}
 					return repl; 
 				}, self) ; 
 			}
