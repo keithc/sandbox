@@ -1,37 +1,58 @@
 <html>
 	<head>
 		<title>Knockout Regex Tester</title>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.1.0/knockout-min.js"></script> 
 		
 		<style>
 			body { font-family: helvetica, arial; font-size: 1em; } 
-			input, textarea { font-family: inherit; font-size: inherit;} 
+			input, textarea { width:300px; font-family: inherit; font-size: inherit; margin-bottom:25px;} 
+			textarea { height: 100px }
+			label { display:block}
 			.highlight { color:#060; background-color:#C5F7C5; } 
-			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; border: solid 1px #CCC; font-weight:bold; text-decoration:underline}
-			.regex { font-weight:normal; text-decoration:none} 
+			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; border: solid 1px #CCC; font-weight:bold;}
+			.regex { margin-top:0px; font-weight:normal; text-decoration:none} 
 			#errorMsg { color:#F00 } 
 		</style> 
 	</head>
-	<body>
-		<input data-bind="value:regexPattern, valueUpdate: 'afterkeydown'" name="regexPattern" placeholder="Enter your regex here."><br/>
-		<textarea data-bind="value:stringToTest" name="stringToTest" placeholder="Enter your test string here."></textarea><br/>
-		<div class="box">Raw string, matches in <span class="highlight">green</span>:<br/><span class="regex" data-bind="html:regexMatch, visible:regexMatch" id="output"></span></div>
-		<span data-bind="html:errorMsg" id="errorMsg"></span>
+	<body> 
+		<div class="box">
+			<label for="pattern">Pattern</label>
+			<input id="pattern" data-bind="value:regexPattern, valueUpdate: 'afterkeydown'" name="regexPattern" placeholder="Enter your regex here."><br/>
+			
+			<label for="stringToTest">String To Test</label>
+			<textarea id="stringToTest" data-bind="value:stringToTest" name="stringToTest" placeholder="Enter your test string here."></textarea>
+			
+			<label for="matchOutput">Raw string, matches in <span class="highlight">green</span></label>
+			<p class="regex" data-bind="html:regexMatch" id="output"></p>
+			
+			<label for="matches">Capture matches</label>
+			<ul data-bind="foreach: regexMatches">
+				<li><p data-bind="text:$data"></p></li>
+			</ul> 
+
+		</div> 
+		<p data-bind="html:errorMsg" id="errorMsg"></p>
 		<script type="text/javascript">
 			function ViewModel() {
 				var self = this; 
 				self.regexPattern = ko.observable(); 
 				self.stringToTest = ko.observable(); 
 				self.errorMsg = ko.observable(); 
+				self.regexMatches = ko.observableArray(); 
+				self.hasMatches = ko.computed(function() { return self.regexMatches().length > 0 });
 				self.regexMatch = ko.computed(function() { 
 					if (!self.regexPattern() || !self.stringToTest()) {
-						return false; 
+						return "...waiting..."; 
 					}
+					self.regexPattern(self.regexPattern().trim()); 
 					//TODO: parse regexPattern on /pattern/modifiers, pass those into the RegExp
 					try { 
+						
 						var rp = new RegExp("(" + self.regexPattern() + ")","g");
 						var repl = self.stringToTest().replace(rp,"<span class='highlight'>$1</span>"); 
+						self.regexMatches(self.stringToTest().match(self.regexPattern())); 
+						//TODO: exec, inspect array http://stackoverflow.com/questions/5495071/capture-groups-with-javascript-regex 
+						self.errorMsg(""); 
 					}
 					catch(err){ 
 						self.errorMsg(err.message); 
