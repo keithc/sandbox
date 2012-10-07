@@ -26,31 +26,48 @@
 			<p class="regex" data-bind="html:regexMatch" id="output"></p>
 			
 			<label for="matches">Capture matches</label>
-			<ul data-bind="foreach: regexMatches">
+			<ol data-bind="foreach: regexMatches">
 				<li><p data-bind="text:$data"></p></li>
-			</ul> 
+			</ol> 
 
 		</div> 
 		<p data-bind="html:errorMsg" id="errorMsg"></p>
 		<script type="text/javascript">
 			function ViewModel() {
 				var self = this; 
-				self.regexPattern = ko.observable(); 
-				self.stringToTest = ko.observable(); 
+				self.regexPattern = ko.observable("(abc)(er)"); 
+				self.stringToTest = ko.observable("abceraaefaedavaerabcaeraa"); 
 				self.errorMsg = ko.observable(); 
 				self.regexMatches = ko.observableArray(); 
 				self.hasMatches = ko.computed(function() { return self.regexMatches().length > 0 });
+				
 				self.regexMatch = ko.computed(function() { 
 					if (!self.regexPattern() || !self.stringToTest()) {
 						return "...waiting..."; 
 					}
-					self.regexPattern(self.regexPattern().trim()); 
+					//self.regexPattern(self.regexPattern().trim()); 
 					//TODO: parse regexPattern on /pattern/modifiers, pass those into the RegExp
 					try { 
+						var rp = new RegExp(self.regexPattern(),"g");
+						var match = rp.exec(self.stringToTest());
+						var repl = self.stringToTest(); 
+						self.regexMatches(match ? match.slice(1,match.length) : []);
+						ko.utils.arrayForEach(self.regexMatches(), function(item) { 
+							var innerRp = new RegExp("(" + item + ")","g");
+							repl = repl.replace(innerRp, "<span class='highlight'>$1</span>");
+						})
+
+						//var rp = new RegExp("(" + self.regexPattern() + ")","g");
+						//var repl = self.stringToTest().replace(rp,"<span class='highlight'>$1</span>"); 
 						
-						var rp = new RegExp("(" + self.regexPattern() + ")","g");
-						var repl = self.stringToTest().replace(rp,"<span class='highlight'>$1</span>"); 
-						self.regexMatches(self.stringToTest().match(self.regexPattern())); 
+						// matched text: match[0]
+    					// match start: match.index
+    					// capturing group n: match[n]
+						
+
+						//console.log(match);
+						//self.regexMatches(rp1.exec(self.stringToTest()));
+						//self.regexMatches(self.stringToTest().match(self.regexPattern())); 
 						//TODO: exec, inspect array http://stackoverflow.com/questions/5495071/capture-groups-with-javascript-regex 
 						self.errorMsg(""); 
 					}
