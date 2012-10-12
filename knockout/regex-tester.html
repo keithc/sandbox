@@ -39,24 +39,29 @@
 				self.stringToTest = ko.observable("abceraaefaedavaerabcaeraa"); 
 				self.errorMsg = ko.observable(); 
 				self.regexMatches = ko.observableArray(); 
-				self.hasMatches = ko.computed(function() { return self.regexMatches().length > 0 });
 				
+				self.hasMatches = ko.computed(function() { return self.regexMatches().length > 0 });
 				self.regexMatch = ko.computed(function() { 
 					if (!self.regexPattern() || !self.stringToTest()) {
 						return "...waiting..."; 
 					}
-					//self.regexPattern(self.regexPattern().trim()); 
-					//TODO: parse regexPattern on /pattern/modifiers, pass those into the RegExp
+					//TODO: parse regexPattern on /pattern/modifiers/checkboxes, pass those into the RegExp
 					try { 
-						var rp = new RegExp(self.regexPattern(),"g");
+						var rp = new RegExp(self.regexPattern().trim(),"g");
 						var match = rp.exec(self.stringToTest());
-						var repl = self.stringToTest(); 
+						var replaceHolder = self.stringToTest(); 
 						self.regexMatches(match ? match.slice(1,match.length) : []);
+						//TODO: counter, index the classes/tooltip on hover with match info
+						var counter=1; 
 						ko.utils.arrayForEach(self.regexMatches(), function(item) { 
 							var innerRp = new RegExp("(" + item + ")","g");
-							repl = repl.replace(innerRp, "<span class='highlight'>$1</span>");
+							//TODO: replace flag needs to be checked for not being in the string - auto-gen a next try? 
+							replaceHolder = replaceHolder.replace(innerRp, "*$1|")
+							//repl = repl.replace(innerRp, "<span class='highlight'>$1</span>");
 						})
-
+						console.log("before "  + replaceHolder); //todo - need greediness check
+						replaceHolder = replaceHolder.replace(/\*(.*)\|/g, "cc" + counter + "$1" + "ff") 
+						console.log("after " + replaceHolder);
 						//var rp = new RegExp("(" + self.regexPattern() + ")","g");
 						//var repl = self.stringToTest().replace(rp,"<span class='highlight'>$1</span>"); 
 						
@@ -74,7 +79,7 @@
 					catch(err){ 
 						self.errorMsg(err.message); 
 					}
-					return repl; 
+					return replaceHolder; 
 				}, self) ; 
 			}
 			ko.applyBindings(new ViewModel()); 
