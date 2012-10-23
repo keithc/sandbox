@@ -1,0 +1,97 @@
+<html>
+	<head>
+		<title>Knockout Regex Tester</title>
+		<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.1.0.js"></script> 
+		
+		<style>
+			body { font-family: helvetica, arial; font-size: 1em; } 
+			#pattern, textarea { display:block; font-family: inherit; font-size: inherit; width: 300px; margin-bottom:25px;} 
+			textarea { height: 100px }
+			label { display:block}
+			.options label { display:inline; font-size:.75em; font-weight:normal;}
+			.options p { margin:5px;}
+			.highlight { color:#060; background-color:#C5F7C5; } 
+			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; margin-bottom:25px; border: solid 1px #CCC; font-weight:bold;}
+			.regex { margin-top:0px; font-weight:normal; text-decoration:none} 
+			#errorMsg { color:#F00 } 
+		</style> 
+	</head>
+	<body> 
+		<div class="box">
+			<label for="pattern">Pattern</label>
+			<input id="pattern" data-bind="value:regexPattern, valueUpdate:'afterkeydown'" name="regexPattern" placeholder="Enter your regex here.">
+			
+			<label for="stringToTest">String To Test</label>
+			<textarea id="stringToTest" data-bind="value:stringToTest, valueUpdate:'afterkeydown'" name="stringToTest" placeholder="Enter your test string here."></textarea>
+
+			<div class="box options">			
+				<p>Options: <span data-bind="text:regexOptions"></span></p>
+				<input type="checkbox" id="opt-global" data-bind="checked:optionGlobal">
+				<label for="opt-global">Global</label>
+
+				<input type="checkbox" id="opt-case" data-bind="checked:optionCase">
+				<label for="opt-case">Case Insensitive</label>
+
+				<input type="checkbox" id="opt-lines" data-bind="checked:optionLines">
+				<label for="opt-case">^ and $ match lines</label>
+			</div>
+
+			<label for="matches" data-bind="visible:hasMatches()">Capture matches</label>
+			<ol data-bind="foreach: regexMatches">
+				<li><p data-bind="text:$data"></p></li>
+			</ol> 
+
+		</div> 
+
+		<p data-bind="html:errorMsg" id="errorMsg"></p>
+
+		<script type="text/javascript">
+			function ViewModel() {
+				var self = this; 
+				//input fields
+				self.regexPattern = ko.observable("(ab)(cd)"); 
+				self.stringToTest = ko.observable("rrabcdrrAbcdrr"); 
+				
+				//options
+				self.optionGlobal = ko.observable(true);
+				self.optionCase = ko.observable(false); 
+				self.optionLines = ko.observable(false); 
+				//options helper
+				self.regexOptions = ko.computed(function () { 
+					return (self.optionGlobal() ? "g" : "") + 
+							(self.optionCase() ? "i" : "") + 
+							(self.optionLines() ? "m" : ""); 
+				}); 
+
+				self.errorMsg = ko.observable(); 
+
+				//output array
+				self.regexMatches = ko.computed(function() { 
+					if (!self.regexPattern() || !self.stringToTest()) {
+						return []; 
+					}
+					try { 
+						var pattern = 
+							new RegExp(self.regexPattern().trim(), self.regexOptions());
+						var match = pattern.exec(self.stringToTest());
+						
+						self.errorMsg(""); 
+
+						//match: [0]=last matched string, [1..n]=capture matches
+						if (match)
+							return (match.length === 1 ? match : match.slice(1,match.length));
+						
+						return []; 
+					}
+					catch(err){ 
+						self.errorMsg(err.message); 
+					}
+				}, self) ; 
+			    self.hasMatches = ko.computed(function() {
+        			return self.regexMatches() ? self.regexMatches().length > 0 : false; 
+	            }); 
+			}
+			ko.applyBindings(new ViewModel()); 
+		</script> 
+	</body>
+</html>
