@@ -1,0 +1,56 @@
+body {
+    font-family: helvetica, arial;
+    font-size: 1em;
+}
+
+#pattern, textarea {
+    display: block;
+    font-family: inherit;
+    font-size: inherit;
+    width: 300px;
+    margin-bottom: 25px;
+}
+
+textarea {
+    height: 100px;
+}
+
+label {
+    display: block;
+}
+
+.options label {
+    display: inline;
+    font-size: .75em;
+    font-weight: normal;
+}
+
+.options p {
+    margin: 5px;
+}
+
+.highlight {
+    color: #060;
+    background-color: #C5F7C5;
+}
+
+.box {
+    background-color: #EEE;
+    min-height: 2em;
+    padding: 10px;
+    display: inline-block;
+    margin: auto;
+    margin-bottom: 25px;
+    border: solid 1px #CCC;
+    font-weight: bold;
+}
+
+.regex {
+    margin-top: 0px;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+#errorMsg {
+    color: #F00;
+} 
