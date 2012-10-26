@@ -7,11 +7,11 @@
 			body { font-family: helvetica, arial; font-size: 1em; } 
 			#pattern, textarea { display:block; font-family: inherit; font-size: inherit; width: 300px; margin-bottom:25px;} 
 			textarea { height: 100px }
-			label { display:block}
-			.options label { display:inline; font-size:.75em; font-weight:normal;}
-			.options p { margin:5px;}
+			label { display:block; font-weight:bold;}
+			.options label { display:inline; font-size:.75em; margin-right:5px;}
+			p { font-weight:bold; margin-bottom:0px;}
 			.highlight { color:#060; background-color:#C5F7C5; } 
-			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; margin-bottom:25px; border: solid 1px #CCC; font-weight:bold;}
+			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; margin-bottom:25px; border: solid 1px #CCC; }
 			.regex { margin-top:0px; font-weight:normal; text-decoration:none} 
 			#errorMsg { color:#F00 } 
 		</style> 
@@ -23,8 +23,7 @@
 			
 			<label for="stringToTest">String To Test</label>
 			<textarea id="stringToTest" data-bind="value:stringToTest, valueUpdate:'afterkeydown'" name="stringToTest" placeholder="Enter your test string here."></textarea>
-
-			<div class="box options">			
+			<div class="box options">
 				<p>Options: <span data-bind="text:regexOptions"></span></p>
 				<input type="checkbox" id="opt-global" data-bind="checked:optionGlobal">
 				<label for="opt-global">Global</label>
@@ -35,16 +34,16 @@
 				<input type="checkbox" id="opt-lines" data-bind="checked:optionLines">
 				<label for="opt-case">^ and $ match lines</label>
 			</div>
-
-			<label for="matches" data-bind="visible:hasMatches()">Capture matches</label>
-			<ol data-bind="foreach: regexMatches">
-				<li><p data-bind="text:$data"></p></li>
+			</br>
+			<!--output--> 
+			<p>Matches</p>
+			<span data-bind="text:lastMatchedString"></span>
+			<p data-bind="visible:hasCaptures()">Capture groups</p>
+			<ol data-bind="foreach: regexCaptures">
+				<li><span data-bind="text:$data"></span></li>
 			</ol> 
-
-		</div> 
-
-		<p data-bind="html:errorMsg" id="errorMsg"></p>
-
+			<p data-bind="html:errorMsg" id="errorMsg"></p>
+		</div>
 		<script type="text/javascript">
 			function ViewModel() {
 				var self = this; 
@@ -64,9 +63,11 @@
 				}); 
 
 				self.errorMsg = ko.observable(); 
+				self.lastMatchedString = ko.observable(""); 
 
 				//output array
-				self.regexMatches = ko.computed(function() { 
+				self.regexCaptures = ko.computed(function() { 
+					self.lastMatchedString("");
 					if (!self.regexPattern() || !self.stringToTest()) {
 						return []; 
 					}
@@ -78,17 +79,21 @@
 						self.errorMsg(""); 
 
 						//match: [0]=last matched string, [1..n]=capture matches
-						if (match)
-							return (match.length === 1 ? match : match.slice(1,match.length));
-						
+						if (match && match.length > 0)
+						{
+							self.lastMatchedString(match[0]);
+							return match.length > 1 ? match.slice(1,match.length) : [];
+						}
 						return []; 
 					}
 					catch(err){ 
 						self.errorMsg(err.message); 
 					}
 				}, self) ; 
-			    self.hasMatches = ko.computed(function() {
-        			return self.regexMatches() ? self.regexMatches().length > 0 : false; 
+				
+
+			    self.hasCaptures = ko.computed(function() {
+        			return self.regexCaptures() && self.regexCaptures().length> 1; 
 	            }); 
 			}
 			ko.applyBindings(new ViewModel()); 

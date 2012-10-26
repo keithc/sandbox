@@ -1,4 +1,4 @@
-			function ViewModel() {
+function ViewModel() {
 				var self = this; 
 				//input fields
 				self.regexPattern = ko.observable("(ab)(cd)"); 
@@ -16,9 +16,11 @@
 				}); 
 
 				self.errorMsg = ko.observable(); 
+				self.lastMatchedString = ko.observable(""); 
 
 				//output array
-				self.regexMatches = ko.computed(function() { 
+				self.regexCaptures = ko.computed(function() { 
+					self.lastMatchedString("");
 					if (!self.regexPattern() || !self.stringToTest()) {
 						return []; 
 					}
@@ -30,17 +32,21 @@
 						self.errorMsg(""); 
 
 						//match: [0]=last matched string, [1..n]=capture matches
-						if (match)
-							return (match.length === 1 ? match : match.slice(1,match.length));
-						
+						if (match && match.length > 0)
+						{
+							self.lastMatchedString(match[0]);
+							return match.length > 1 ? match.slice(1,match.length) : [];
+						}
 						return []; 
 					}
 					catch(err){ 
 						self.errorMsg(err.message); 
 					}
 				}, self) ; 
-			    self.hasMatches = ko.computed(function() {
-        			return self.regexMatches() ? self.regexMatches().length > 0 : false; 
+				
+
+			    self.hasCaptures = ko.computed(function() {
+        			return self.regexCaptures() && self.regexCaptures().length> 1; 
 	            }); 
 			}
 			ko.applyBindings(new ViewModel()); 
