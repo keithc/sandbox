@@ -1,7 +1,7 @@
 function ViewModel() {
 				var self = this; 
 				//input fields
-				self.regexPattern = ko.observable("(ab)(cd)"); 
+				self.regexPattern = ko.observable("ab(cd)"); 
 				self.stringToTest = ko.observable("rrabcdrrAbcdrr"); 
 				
 				//options
