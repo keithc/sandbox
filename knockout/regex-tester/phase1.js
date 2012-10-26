@@ -46,7 +46,7 @@ function ViewModel() {
 				
 
 			    self.hasCaptures = ko.computed(function() {
-        			return self.regexCaptures() && self.regexCaptures().length> 1; 
+        			return self.regexCaptures() && self.regexCaptures().length> 0; 
 	            }); 
 			}
 			ko.applyBindings(new ViewModel()); 
