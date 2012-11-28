@@ -1,0 +1,100 @@
+<html> 
+	<head>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script type="text/javascript" src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+		<script type="text/javascript" src="http://backbonejs.org/backbone-min.js"></script>
+	</head>
+	
+	<body>
+		<header>Traffic</header>
+
+		<section> 
+				<header>Intersections</header>
+				<ul id="intersections"></ul>
+		</section> 
+
+		<script type="text/javascript">
+		$(document).ready( function() { 
+			var Intersection = Backbone.Model.extend({
+				defaults: function() { 
+					return { 
+						id: Intersections.nextId(),
+						location: Intersections.nextAvailableLocation(), //todo - maybe not on the list
+						connections: []
+					}
+				},
+				initialize: function() { 
+					
+				},
+				connect: function(targetIntersection) { 
+
+				}
+
+			}); 
+
+			var IntersectionList = Backbone.Collection.extend({ 
+				model: Intersection,
+				nextId: function() { 
+					if (!this.length) return 1; 
+					return this.last().get('id') + 1; 
+				},
+				nextAvailableLocation: function() { 
+					return "1,1";
+				}
+
+			});
+
+			var Intersections = new IntersectionList; 
+
+			//view for an intersection item - li
+			var IntersectionView = Backbone.View.extend({
+				tagName: "li",
+				template: _.template($('#intersection-template').html()), 
+				events : {},
+				initialize: function() { 
+					this.model.bind('change', this.render, this); 
+					this.model.bind('destroy', this.remove, this);
+				},
+				render: function() { 
+					this.$el.html(this.template(this.model.toJSON())); 
+					return this; 
+				},
+				clear: function() { 
+					this.model.clear(); 
+				}
+
+			});
+
+			var AppView = Backbone.View.extend({ 
+				el: $("body"), 
+				initialize: function() { 
+
+					Intersections.add(new Intersection);
+					Intersections.add(new Intersection);
+					this.addAll(); 
+				},
+				render: function() { 
+					console.log("RENDER");		
+					//IntersectionView.render(); 
+				},
+				addIntersection: function(intersection) { 
+					var view = new IntersectionView({ model: intersection}); 
+					this.$("#intersections").append(view.render().el); 
+				},
+				addAll: function() {
+					Intersections.each(this.addIntersection);
+				}
+			}); 
+			
+				var app_view = new AppView(); 
+			}); 
+			
+
+		</script> 
+		<script type="text/template" id="intersection-template">
+    		<div class="view">
+      			<span>ID:<%- id %> Location: <%- location %></span>
+    		</div>
+ 		</script>
+	</body>
+</html> 
