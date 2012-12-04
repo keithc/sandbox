@@ -12,6 +12,7 @@
 			p { font-weight:bold; margin-bottom:0px;}
 			.highlight { color:#060; background-color:#C5F7C5; } 
 			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; margin-bottom:25px; border: solid 1px #CCC; }
+			.box2 { vertical-align: top; margin-left:20px; display:inline-block;}
 			.regex { margin-top:0px; font-weight:normal; text-decoration:none} 
 			#errorMsg { color:#F00 } 
 		</style> 
@@ -36,20 +37,33 @@
 			</div>
 			</br>
 			<!--output--> 
+			<hr/>
+			<p>- String.Match() -</p>
+			<ol data-bind="foreach: regexMatches">
+				<li><span data-bind="text:$data"></span></li>
+			</ol> 
+			<hr/>
+			
+			<p>- String.Replace() -</p>
+			<span data-bind="text:regexReplace"></span>
+			<hr/>
+
+			<p>- Regex.Exec() -</p>
 			<p>Matches</p>
 			<span data-bind="text:lastMatchedString"></span>
 			<p data-bind="visible:hasCaptures()">Capture groups</p>
 			<ol data-bind="foreach: regexCaptures">
-				<li><span data-bind="text:$data"></span></li>
+				<li><span data-bind="text:matchedText"></span> + <span data-bind="text:index"></span> </li>
 			</ol> 
 			<p data-bind="html:errorMsg" id="errorMsg"></p>
+			<hr/>
 		</div>
 		<script type="text/javascript">
 			function ViewModel() {
 				var self = this; 
 				//input fields
-				self.regexPattern = ko.observable("ab(cd)"); 
-				self.stringToTest = ko.observable("rrabcdrrAbcdrr"); 
+				self.regexPattern = ko.observable(".at"); 
+				self.stringToTest = ko.observable("catbatcat"); 
 				
 				//options
 				self.optionGlobal = ko.observable(true);
@@ -65,33 +79,58 @@
 				self.errorMsg = ko.observable(); 
 				self.lastMatchedString = ko.observable(""); 
 
-				//output array
-				self.regexCaptures = ko.computed(function() { 
-					self.lastMatchedString("");
+				self.okToRunRegex = function() { 
 					if (!self.regexPattern() || !self.stringToTest()) {
-						return []; 
+						return false; 
+					}
+					return true; 
+				}
+
+				//output vars
+				self.regexMatches = ko.observableArray(); 
+				self.regexCaptures = ko.observableArray(); 
+				self.regexReplace = ko.observable(""); 
+
+				self.processRegex = ko.computed(function() { 
+					self.lastMatchedString("");
+
+					if (!self.okToRunRegex()) {
+						return false; 
 					}
 					try { 
-						var pattern = 
-							new RegExp(self.regexPattern().trim(), self.regexOptions());
-						var match = pattern.exec(self.stringToTest());
-						
+						var pattern = new RegExp(self.regexPattern().trim(), self.regexOptions());
+						var match = self.stringToTest().match(pattern);
+						var execMatch = pattern.exec(self.stringToTest());
+						self.stringToTest().replace(pattern);
+
 						self.errorMsg(""); 
 
-						//match: [0]=last matched string, [1..n]=capture matches
-						if (match && match.length > 0)
-						{
-							self.lastMatchedString(match[0]);
-							return match.length > 1 ? match.slice(1,match.length) : [];
+						if (match && match.length > 0 ){
+							self.regexMatches(match); 
 						}
-						return []; 
+
+						if (execMatch && execMatch.length > 0){
+							self.lastMatchedString(execMatch[0]);
+							//return execMatch.length > 1 ? execMatch.slice(1,execMatch.length) : [];
+							if (execMatch.length > 1){
+								while(execMatch = pattern.exec(self.stringToTest())) {
+									var myMatch = {matchedText: execMatch[1], index: execMatch.index};
+    								console.log(execMatch); 
+    								//self.regexCaptures(execMatch.slice(1,execMatch.length)); 
+    								self.regexCaptures.push(myMatch);  
+								}
+
+							}
+							 
+
+							
+						}
 					}
 					catch(err){ 
 						self.errorMsg(err.message); 
 					}
-				}, self) ; 
-				
-
+				});
+					
 			    self.hasCaptures = ko.computed(function() {
         			return self.regexCaptures() && self.regexCaptures().length> 0; 
 	            }); 
