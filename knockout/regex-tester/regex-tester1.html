@@ -12,51 +12,53 @@
 			p { font-weight:bold; margin-bottom:0px;}
 			.highlight { color:#060; background-color:#C5F7C5; } 
 			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; margin-bottom:25px; border: solid 1px #CCC; }
-			.box2 { vertical-align: top; margin-left:20px; display:inline-block;}
+			.output-box { background-color:#fff;}
 			.regex { margin-top:0px; font-weight:normal; text-decoration:none} 
-			#errorMsg { color:#F00 } 
+			#error-message { color:#F00 } 
 		</style> 
 	</head>
 	<body> 
 		<div class="box">
 			<label for="pattern">Pattern</label>
 			<input id="pattern" data-bind="value:regexPattern, valueUpdate:'afterkeydown'" name="regexPattern" placeholder="Enter your regex here.">
-			
-			<label for="stringToTest">String To Test</label>
-			<textarea id="stringToTest" data-bind="value:stringToTest, valueUpdate:'afterkeydown'" name="stringToTest" placeholder="Enter your test string here."></textarea>
-			<div class="box options">
+			<div class="options">
 				<p>Options: <span data-bind="text:regexOptions"></span></p>
 				<input type="checkbox" id="opt-global" data-bind="checked:optionGlobal">
-				<label for="opt-global">Global</label>
-
+				<label for="opt-global">g</label>
 				<input type="checkbox" id="opt-case" data-bind="checked:optionCase">
-				<label for="opt-case">Case Insensitive</label>
-
+				<label for="opt-case">i</label>
 				<input type="checkbox" id="opt-lines" data-bind="checked:optionLines">
-				<label for="opt-case">^ and $ match lines</label>
+				<label for="opt-case">m</label>
 			</div>
 			</br>
-			<!--output--> 
-			<hr/>
-			<p>- String.Match() -</p>
-			<ol data-bind="foreach: regexMatches">
-				<li><span data-bind="text:$data"></span></li>
-			</ol> 
-			<hr/>
-			
-			<p>- String.Replace() -</p>
-			<span data-bind="text:regexReplace"></span>
-			<hr/>
 
-			<p>- Regex.Exec() -</p>
-			<p>Matches</p>
-			<span data-bind="text:lastMatchedString"></span>
-			<p data-bind="visible:hasCaptures()">Capture groups</p>
-			<ol data-bind="foreach: regexCaptures">
-				<li><span data-bind="text:matchedText"></span> + <span data-bind="text:index"></span> </li>
-			</ol> 
-			<p data-bind="html:errorMsg" id="errorMsg"></p>
-			<hr/>
+			<label for="stringToTest">String To Test</label>
+			<textarea id="stringToTest" data-bind="value:stringToTest, valueUpdate:'afterkeydown'" name="stringToTest" placeholder="Enter your test string here."></textarea>
+
+			</br>
+			<!--output--> 
+			<div class="box output-box">
+				<p>String.Match()</p>
+				
+				<ol data-bind="foreach: regexMatches">
+					<li><p data-bind="highlightedText: { text:stringToTest.value, highlight: $data, css: 'highlight'}"></p></li>
+					<li><span data-bind="text:$data"></span></li>
+				</ol> 
+				<hr/>
+				
+				<p>String.Replace()</p>
+				<span data-bind="text:regexReplace"></span>
+				<hr/>
+
+				<p>Regex.Exec()</p>
+				<p>Matches</p>
+				<span data-bind="text:lastMatchedString"></span>
+				<p data-bind="visible:hasCaptures()">Capture groups</p>
+				<ol data-bind="foreach: regexCaptures">
+					<li><span data-bind="text:matchedText"></span> + <span data-bind="text:index"></span> </li>
+				</ol> 
+				<p data-bind="html:errorMsg" id="error-message"></p>
+			</div>
 		</div>
 		<script type="text/javascript">
 			function ViewModel() {
@@ -68,7 +70,8 @@
 				//options
 				self.optionGlobal = ko.observable(true);
 				self.optionCase = ko.observable(false); 
-				self.optionLines = ko.observable(false); 
+				self.optionLines = ko.observable(false);
+
 				//options helper
 				self.regexOptions = ko.computed(function () { 
 					return (self.optionGlobal() ? "g" : "") + 
@@ -119,11 +122,7 @@
     								//self.regexCaptures(execMatch.slice(1,execMatch.length)); 
     								self.regexCaptures.push(myMatch);  
 								}
-
 							}
-							 
-
-							
 						}
 					}
 					catch(err){ 
@@ -136,6 +135,20 @@
 	            }); 
 			}
 			ko.applyBindings(new ViewModel()); 
+			ko.bindingHandlers.highlightedText= { 
+				update: function(element, valueAccessor) {
+					console.log("IN update");
+			        var options = valueAccessor();
+			        var value = ko.utils.unwrapObservable(options.text);
+			        var search = ko.utils.unwrapObservable(options.highlight);
+			        var css = ko.utils.unwrapObservable(options.css);
+			        if (options.sanitize) {
+			            value = $('<div/>').text(value).html(); //could do this or something similar to escape HTML before replacement, if there is a risk of HTML injection in this value
+			        }
+			        var replacement = '<span class="' + css + '">' + search + '</span>';
+			        element.innerHTML = value.replace(new RegExp(search, 'g'), replacement);
+			    }
+			}
 		</script> 
 	</body>
 </html>
