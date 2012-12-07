@@ -38,7 +38,7 @@
 			</br>
 			<!--output--> 
 			<div class="box output-box">
-				<p data-bind="highlightedText: { text:stringToTest.value, matches: regexExecResult, css: 'highlight'}"></p>
+				<div data-bind="highlightedText: { text:stringToTest, matches: regexExecResult(), css: 'highlight'}"></div>
 				<p>Matches</p>
 				<span data-bind="text:lastMatchedString"></span>
 				<p data-bind="visible:hasCaptures()">Capture groups</p>
@@ -102,10 +102,11 @@
 
 						var execMatch; 
 						self.regexExecResult([]); 
+						console.log("CLEARED");
 						while (execMatch = pattern.exec(self.stringToTest())){
 							self.regexExecResult.push({matchedText: execMatch[0], index: execMatch.index});
 						}
-						console.log(self.regexExecResult());
+						console.log("--" + self.regexExecResult());
 						//if (execMatch && execMatch.length > 0){
 						//	console.log("first: " + execMatch); 
 						//	self.regexExecResult.push(execMatch);
@@ -133,9 +134,8 @@
 	            }); 
 			}
 			ko.applyBindings(new ViewModel()); 
-
 			ko.bindingHandlers.highlightedText= { 
-				init: function(element, valueAccessor){ console.log("IN INIT " + new Date()); },
+				//init: function(element, valueAccessor){ console.log("IN INIT " + new Date()); },
 				update: function(element, valueAccessor) {
 					console.log("IN update");
 			        var options = valueAccessor();
@@ -145,15 +145,25 @@
 			        if (options.sanitize) {
 			            value = $('<div/>').text(value).html(); //could do this or something similar to escape HTML before replacement, if there is a risk of HTML injection in this value
 			        }
-			        var replacement = '<span class="' + css + '">' + search + '</span>';
-for (i=0; i<matches.length; i++){
-	console.log(value.substring(matches[i].index));	
-}
+			        
+					for (i=0; i<matches.length; i++){
+						var replacement = '<span class="' + css + '">' + matches[i].matchedText + '</span>';
+						element.innerHTML = value.replace(new RegExp(matches[i].matchedText, 'g'), replacement);
+						console.log(value.substring(matches[i].index));	
+					}
 
 
-			        element.innerHTML = value.replace(new RegExp(search, 'g'), replacement);
+			        
 			    }
 			}
+		//	ko.bindingHandlers.highlightedText= { 
+		//		init: function(element, valueAccessor){ console.log("IN INIT " + new Date()); },
+		//		update: function(element, valueAccessor) {
+		//			console.log("IN update");
+		//	        
+		//	    }
+		//	}
+			
 		</script> 
 	</body>
 </html>
