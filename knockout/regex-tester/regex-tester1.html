@@ -134,43 +134,39 @@
 			}
 			ko.applyBindings(new ViewModel()); 
 			ko.bindingHandlers.highlightedText= { 
-				//init: function(element, valueAccessor){ console.log("IN INIT " + new Date()); },
+				init: function(element, valueAccessor){ console.log("IN INIT " + new Date()); },
 				update: function(element, valueAccessor) {
 					//console.log("IN update");
 			        var options = valueAccessor();
-			        var value = ko.utils.unwrapObservable(options.text);
+			        var originalText = ko.utils.unwrapObservable(options.text);
 			        var matches = ko.utils.unwrapObservable(options.matches);
 			        var css = ko.utils.unwrapObservable(options.css);
 			        if (options.sanitize) {
-			            value = $('<div/>').text(value).html(); //could do this or something similar to escape HTML before replacement, if there is a risk of HTML injection in this value
+			            value = $('<div/>').text(originalText).html(); //could do this or something similar to escape HTML before replacement, if there is a risk of HTML injection in this value
 			        }
-			        
-					for (i=matches.length-1; i>-1; i--){
-						var replacement = '<span class="' + css + '">' + matches[i].matchedText + '</span>';
-						//var xyz = value.substr(0,index) + replacement + this.substr(index + matches[i].matchedText.length);
-						//element.innerHTML = value.replace(new RegExp(matches[i].matchedText, 'g'), replacement);
-						value = value.replaceAt(matches[i].index, replacement, matches[i].length);
-						//console.log(value.substring(matches[i].index));	
-						console.log("*" + value.replaceAt(matches[i].index, replacement));
-					}
-					element.innerHTML = value; 
 
-			        
-			    }
-			}
-			String.prototype.replaceAt=function(index, substring, length){
-				return this.substr(0,index) + substring + this.substr(index + length);
-				//return this.substr(0,index) + substring + this.substr(index + substring.length);
-			}
 
-		//	ko.bindingHandlers.highlightedText= { 
-		//		init: function(element, valueAccessor){ console.log("IN INIT " + new Date()); },
-		//		update: function(element, valueAccessor) {
-		//			console.log("IN update");
-		//	        
-		//	    }
-		//	}
-			
+
+			        if (matches && matches.length==0){
+			        	element.innerHTML = originalText;  //return? 
+			        }
+			        else  
+			        { 
+			        	var highlightedString="", startPos=0, replacement=""; 
+			        	for (var i=0; i < matches.length; i++){
+			        		startPos = matches[i-1] ? matches[i-1].index + matches[i-1].matchedText.length: 0; 
+			        		replacement = '<span class="' + css + '">' + matches[i].matchedText + '</span>';
+			        		var myString = originalText.substring(startPos, matches[i].index) + 
+			        						replacement;
+			        		highlightedString += myString; 
+
+			        	}
+			        	startPos = matches[matches.length-1].index + matches[matches.length-1].matchedText.length; 
+			        	highlightedString += originalText.substring(startPos, originalText.length);
+			        }
+					element.innerHTML = highlightedString; 
+				}    
+			}			
 		</script> 
 	</body>
 </html>
