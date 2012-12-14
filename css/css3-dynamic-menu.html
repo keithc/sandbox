@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<style>
+		/*minimal*/
+		#menu, #menu ul { margin:0; padding:0; list-style:none;}
+		#menu li { margin:0 1em; float:left; position:relative;}
+		#menu ul { visibility: hidden; position:absolute; top:.9em;} /*ul's need to touch - close enough so hover won't interrupt*/
+		#menu li:hover > ul { visibility : visible;}
+
+		/*top menus*/
+/*		#menu, #menu ul { margin:0; padding:0; list-style:none;}
+		#menu { width:960px; margin:40px auto; border:1px solid blue; }
+		#menu li { border:1px solid #ccc; float:left; position:relative;}
+		#menu a { float:left; padding:10px 20px;}
+		#menu li:hover > a { background:#ccc; color: #007dba; border:1px solid #999;}
+		/*submenus*/
+/*		#menu ul { margin:20px 0; visibility:hidden; position:absolute; top:20px;}
+		#menu li:hover > ul { visibility:visible; background:#999; }
+		#menu ul a:hover { background:#333; color:red;}
+		/* float clear*/
+/*		#menu:before,
+		#menu:after { content: ""; display: table;}
+		#menu:after { clear: both;}
+		#menu {	zoom:1;}*/
+	</style>
+</head>
+<body> 
+<ul id="menu">
+	<li><a href="#">Home</a></li>
+	<li>
+		<a href="#">Parent1</a>
+		<ul>
+			<li><a href="a">Category1</a></li>
+			<li><a href="b">Category2</a></li>
+			<li><a href="#">Category3</a></li>
+			<li><a href="#">Category4</a></li>
+		</ul>
+	</li>
+	<li><a href="#">Parent2</a></li>
+	<li><a href="#">Parent3</a></li>
+	<li><a href="#">Parent4</a></li>
+</ul>
+</body>
+</html> 
+<!--http://www.red-team-design.com/css3-animated-dropdown-menu-->
