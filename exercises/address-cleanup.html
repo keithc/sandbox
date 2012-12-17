@@ -1,0 +1,33 @@
+<html>
+<title>mailing address cleanup</title>
+<body>
+	<script type="text/javascript">
+		var address = "Joe Smith; 123 Anywhere Street; Austin, TX, 78731; United States";
+		var maxLength = 50; 
+		console.log(cleanAddress(address, maxLength));
+
+		function cleanAddress(address, maxLength)
+		{
+			if (address.length <= maxLength){
+				return address; 
+			}
+			//any non-whitespace char followed by a semi-colon = \S*;
+			//one or more of anything that's not a semi-colon = ([^;]+)
+			var pattern = /[^;]+/g;
+
+			while (execMatch = pattern.exec(address)) { 
+				console.log(execMatch[0]);
+			}
+			//match[0] = name - can be shortened to last word or removed
+			//match[1] = street 1 - shorten last word to abbreviation (lane = ln)
+			//match[2] = city, state, zip - shorten state to two/remove all but zip
+			//match[3] = country - remove? 
+
+			var cleanedString = ""; 
+
+			return cleanedString;
+		}
+	</script> 
+
+</body> 
+</html>
