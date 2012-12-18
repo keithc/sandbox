@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<title>js queues and stacks</title>
+	</head>
+	<body>
+		<script type="text/javascript">
+			//stack
+			console.log("stack - FILO");
+			var stack = []; 
+
+			for (var i=0; i<10; i++){
+				stack.push(i);
+			}
+			console.log("after push - stack:" + stack); 
+			
+			do{
+				console.log("pop:" + stack.pop());
+			}
+			while (stack.length > 0)
+
+			//queue(s)
+			console.log("queue - FIFO (shift version)");
+			//slow, simple version
+			var myqueue=[];
+			for (var i=0; i<10; i++) { 
+				myqueue.push(i);
+			}
+			console.log("after enqueue - queue:" + myqueue);
+			do{ 
+				console.log("dequeue:" + myqueue.shift()); //shift is not speedy
+			}
+			while (myqueue.length > 0)
+
+			//queue implementation version
+			console.log("queue - FIFO (function version)")
+			var myqueue = queue(); 
+
+			for (var i=0; i<10; i++) { 
+				console.log("enqueue:" + myqueue(i));
+			}
+			//dequeue
+			var x=null;
+			do
+			{
+				x = myqueue(); 
+				console.log("dq:" + x); 
+			} 
+			while(x !== undefined)
+
+			//queue implementation
+			function queue() { 
+				var first=0, last=-1, list=[], undefined; 
+				return function(value){
+					//enqueue
+					if (value !== undefined) { 
+						return list[++last] = value; 
+					}
+					//empty queue
+					if (first > last) { 
+						return undefined;
+					}
+					//called with no arg - dequeue
+					value = list[first];
+					delete list[first]; 
+					first++; 
+					return value; 
+				}
+			}
+
+
+		</script> 
+	</body>
+</html>

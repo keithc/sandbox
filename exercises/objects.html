@@ -1,0 +1,61 @@
+<html><head></head><body>
+<script type ="text/javascript"> 
+var i =0; 
+function replacer(string, match) { 
+alert("called") ;
+i=i+1; 
+return i
+};  
+str = "The quick brown fox jumped over the lazy brown dog. Yo";
+str = str.replace(/(\w\b)/g, replacer);
+document.write (str); 
+
+</script> 
+<script type="text/javascript"> 
+
+var person = { 
+	getName : function() { 
+		console.log("name: " + this.name); 
+	}
+}; 
+
+var mateo = Object.create( person, { 
+	'id':{
+		value: 'mj',
+		enumerable: true
+	},
+	'name': {
+		value: 'mateo',
+		enumerable: true
+	}
+});
+	
+var lilp = Object.create( person ) ; 
+Object.defineProperty(lilp, 'name', {value:'patricia', enumerable:true}); 
+Object.defineProperty(lilp, 'id', {value:'p', enumerable:true}); 
+
+
+
+	</script> 
+	
+	<script type="text/javascript"> 
+		var personPrototype = {
+			init: function( personName ) { 
+				this.name = personName; 
+			},
+			getName: function() { console.log(" Name: " + this.name) } 
+		};
+		
+		function person(name) { 
+			function F() {} ; 
+			F.prototype = personPrototype; 
+			
+			var f = new F(); 
+			f.init( name ); 
+			return f; 
+		};
+		
+		var mateojack = person("mateo"); 
+		mateojack.getName(); 
+		
+	</script>

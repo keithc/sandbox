@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>  
+<html>
+	<head>
+		<title>Element stuff</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style type="text/css"> 
+			body {
+				font-size:12px; 
+				font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+			}
+			a { 
+				color: #060; 
+			}
+			.link { 
+				text-decoration: none 
+			}  
+		
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript"> 
+		//pub-sub - http://darcyclarke.me/development/library-agnostic-pubsub-publish-subscribe/
+		(function(window){
+			ps = {},
+			ps = window.ps,
+			ps.subscriptions = [],
+			ps.subscribe = function(name, callback){
+				ps.subscriptions.push({"name": name, "callback": callback});
+				return [name,callback];
+			},
+			ps.unsubscribe = function(args){
+				for(x=0;x<ps.subscriptions.length;x++){
+					if(ps.subscriptions[x].name == args[0], ps.subscriptions[x].callback == args[1])
+						ps.subscriptions.splice(x, 1);
+				}
+			},
+			ps.publish = function(name, args){
+				var temp = [];
+				if(ps.subscriptions.length > 0){
+					for(var x=0;x<ps.subscriptions.length;x++) {
+						if(ps.subscriptions[x].name == name)
+							temp.push({"fn":ps.subscriptions[x].callback});
+					}
+					for(x=0;x<temp.length;x++){
+						temp[x].fn.apply(this,[args]);
+					}
+				}
+			};
+		})(window);
+		</script>
+	
+	
+		<ul type="disc">
+		 <li>Apples</li>
+		 <li>Bananas</li>
+		 <li>Lemons</li>
+		 <li>Oranges</li>
+		</ul>  
+	
+	
+		<!-- writer -->
+		<script type="text/javascript">
+			//get the (first) list
+			var list = document.getElementsByTagName('ul')[0]; 
+			var max=4, count=0;  
+			
+			//lisztomania
+			var listInterval = window.setInterval(function () { 
+					if (count===max) { 
+						window.clearInterval(listInterval) ; 
+						ps.publish("listBuilt"); 
+					}
+					var items = list.getElementsByTagName('li'); 
+					var randomNum = Math.floor(Math.random()*items.length);
+					var listItem = items[randomNum]; 
+					var newElement = document.createElement("li")
+					newElement.innerHTML = "element" + count; 
+					listItem.parentNode.insertBefore(newElement, listItem); 
+					count ++; 
+			}, 1000); 
+			
+			ps.subscribe("listBuilt", function() { 
+				//create some anchors based on li's, replace the li text with the anchor
+				var items = document.getElementsByTagName('li'); 
+				for (var i=0; i < items.length; i++) { 
+					//randomly pick out about half of them
+					if ( (Math.floor(Math.random()*items.length)) > max/2) { 
+						var anchor = document.createElement("a"); 
+						anchor.setAttribute("href","#") ; 
+						var textNode = document.createTextNode(items[i].innerHTML); 
+						anchor.appendChild(textNode); 
+						anchor.setAttribute("class","link") ; 
+						items[i].innerHTML = ""; //seems silly
+						items[i].appendChild(anchor);	
+					}
+				}
+				ps.publish("anchorsBuilt"); 
+			});
+			
+			ps.subscribe("anchorsBuilt", function() { 
+				//create an iframe
+				var myFrame = document.createElement("iframe");
+				myFrame.id = "myFrame"; 
+				myFrame.src = "http://www.yahoo.com"; 
+				document.body.parentNode.insertBefore(myFrame,document.body); 
+				//resize, recolor
+				document.getElementById("myFrame").frameBorder="0";
+				var innerDoc = ( myFrame.contentWindow || myFrame.contentDocument );
+				if (innerDoc){ 
+					innerDoc.document.body.style.backgroundColor="#050"; 
+				}
+				myFrame.height="250"; 
+				myFrame.width="550"; 
+			}); 
+		</script> 
+		
+		<!-- echo --> 
+		<script type="text/javascript"> 
+		
+			//totals
+			//var allParas = document.getElementsByTagName("p");
+		</script> 
+		
+
+	</body>
+</html>
+

@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title>string spinning</title>
+	</head>
+	<body>
+		<script type="text/javascript">
+
+			//regex callee
+			function reverseLetters(match){
+				return match.split('').reverse().join(''); 
+			}
+
+			String.prototype.reverse=function() { return this.split('').reverse().join('');} ; 
+
+			var myString = "Here is a string of words."; 
+			var outString = myString.replace(/\w+/g, reverseLetters);
+
+			document.write("<p>Original string:: " + myString + "</p>");
+			document.write("<p>Letters reversed with regex:: " + outString + "</p>");
+			
+			var arr = myString.split(' '); 
+			outString ="";
+			for (var i=0; i<arr.length; i++) { 
+				outString += arr[i].reverse() + " " ; 
+			}
+			document.write("<p>Letters reversed with prototype:: " + outString + "</p>");
+			
+			outString = myString.reverse();  
+			document.write("<p>All letters reversed with prototype:: " + outString + "</p>");
+		
+			outString = myString.split(" ").reverse().join(" "); 
+			document.write("<p>Words reversed:: " + outString + "</p>");
+
+		</script>
+	</body>
+</html>

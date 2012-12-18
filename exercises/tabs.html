@@ -1,0 +1,108 @@
+
+<html>
+	<head>
+		<title>tabs</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<style>
+			body { 
+				font-family:helvetica;
+				font-size:1em;
+			}
+			html { 
+				font-size:100%; /*ie*/
+			}
+			.tabs { 
+					display:table;
+					list-style-type: none;
+					padding:0;
+					margin:0;
+			}
+			.tabs>li { 
+				display:table-cell;
+				padding:1em 3em; /*display:table = no margin*/;
+				border: 1px solid #999;
+			}
+			.tabs>li.selected { 
+				background-color:#FF9;
+			}
+			.content-container { 
+				border: 1px solid #999;
+				width: 40em;
+				margin:0 0 2em 0;
+			}
+			.content-container>div { 
+				display:none;
+			}
+		</style> 
+	</head>
+	<body>
+		<!--tab row-->
+		<ul id="tab-1" class="tabs">
+			<li id="tab-one" class="selected"><a href="#">Tab One</a></li> 
+			<li id="tab-two"><a href="#">Tab Two</a></li> 
+			<li id="tab-three"><a href="#">Tab Three</a></li> 
+			<li id="tab-four"><a href="#">Tab Four</a></li>
+		</ul>
+
+		<!--content--> 
+		<div id="container-1" class="content-container">
+			<div id="content-one">First-container content: This is content in the first div.</div>
+			<div id="content-two">First-container content: This is content in the second div.</div>
+			<div id="content-three">First-container content: This is content in the third div.</div>
+			<div id="content-four">First-container content: This is content in the fourth div. And it includes a second line of text. No, really, here's the second line already.</div>
+		</div>
+		
+		<ul id="tab-2" class="tabs">
+			<li id="tab-one" class="selected"><a href="#">Tab One</a></li> 
+			<li id="tab-two"><a href="#">Tab Two</a></li> 
+			<li id="tab-three"><a href="#">Tab Three</a></li> 
+			<li id="tab-four"><a href="#">Tab Four</a></li>
+		</ul>
+
+		<!--content--> 
+		<div id="container-2" class="content-container">
+			<div id="content-one">Second-container content: This is content in the first div.</div>
+			<div id="content-two">Second-container content: This is content in the second div.</div>
+			<div id="content-three">Second-container content: This is content in the third div.</div>
+			<div id="content-four">Second-container content: This is content in the fourth div. And it includes a second line of text. No, really, here's the second line already.</div>
+		</div>
+		<footer> 
+			This is a footer!
+		</footer>
+
+		<script type="text/javascript">
+			$("body").on("click", ".tabs li",function(evt) { 
+				var tabId, containerId, $myContent, $myContainer, undefined, $this = $(this); 
+				evt.preventDefault(); 
+
+				//find my content container
+				var myParent = $this.parent("ul");
+				if (myParent && myParent.length>0){
+					containerId = myParent[0].id.split("-")[1]; 
+					$myContainer = $("#container-" + containerId);
+					if (!$myContainer){
+						return false; 
+					}
+				}
+
+				//find my inner content div 
+				tabId = this.id.indexOf("-") >-1 ? this.id.split("-")[1] : undefined;
+				if (!tabId) { 
+					return false;
+				} 
+
+				//hide the other divs, show this one
+				$myContent = $myContainer.find("#content-" + tabId);
+				if ($myContent){
+					$myContainer.children("div").hide(); 
+					$myContent.show(); 
+				}
+				//highlight selected menu item
+				$this.siblings().removeClass("selected");	
+				$this.addClass("selected");
+			})
+			//init
+			$(".tabs").find("li.selected").trigger("click");
+		</script>
+	</body>
+</html>
