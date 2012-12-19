@@ -12,20 +12,20 @@
 				font-size:100%; /*ie*/
 			}
 			.tabs { 
-					display:table;
 					list-style-type: none;
 					padding:0;
 					margin:0;
 			}
 			.tabs>li { 
-				display:table-cell;
-				padding:1em 3em; /*display:table = no margin*/;
+				float:left;
+				padding:1em 2em; 
 				border: 1px solid #999;
 			}
-			.tabs>li.selected { 
+			.selected { 
 				background-color:#FF9;
 			}
 			.content-container { 
+				clear:left;
 				border: 1px solid #999;
 				width: 40em;
 				margin:0 0 2em 0;
@@ -33,6 +33,51 @@
 			.content-container>div { 
 				display:none;
 			}
+
+			/*display:table styles*/
+			.tabs-table{ 
+				display:table;
+				max-width:600; 
+			}
+			.tabs-container { 
+				display:table-row; 
+				max-width:600;
+				overflow:hidden;
+			}
+			.tabs-container>ul{
+				list-style-type:none;
+				margin:0; 
+				padding:0;
+			}
+			.tabs-list li { 
+				display:table-cell;
+				max-width:600px;
+				border: 1px solid #990;
+				padding: 1em 3em;
+
+			}
+			.content-table { 
+				margin-bottom:2em;
+				max-width:600px;
+				border:1px solid #999;
+			}
+			.content-table>div[id^="tab"] { 
+				display: none;
+			}
+			/*first tab visible*/
+			#tab1 { 
+				display:block;
+			}
+			.closed-tab { 
+				left:800;
+				display:none;
+			}
+			.open-tab { 
+				left:0;
+				border:1px solid green;
+				display:block;
+			}
+
 		</style> 
 	</head>
 	<body>
@@ -42,6 +87,7 @@
 			<li id="tab-two"><a href="#">Tab Two</a></li> 
 			<li id="tab-three"><a href="#">Tab Three</a></li> 
 			<li id="tab-four"><a href="#">Tab Four</a></li>
+			<li id="tab-five"><a href="#">Tab Five</a></li>
 		</ul>
 
 		<!--content--> 
@@ -50,6 +96,7 @@
 			<div id="content-two">First-container content: This is content in the second div.</div>
 			<div id="content-three">First-container content: This is content in the third div.</div>
 			<div id="content-four">First-container content: This is content in the fourth div. And it includes a second line of text. No, really, here's the second line already.</div>
+			<div id="content-five">First-container content: This is content in the fifth div.</div>
 		</div>
 		
 		<ul id="tab-2" class="tabs">
@@ -66,11 +113,31 @@
 			<div id="content-three">Second-container content: This is content in the third div.</div>
 			<div id="content-four">Second-container content: This is content in the fourth div. And it includes a second line of text. No, really, here's the second line already.</div>
 		</div>
+
+		<!--display:table style-->
+		<div class="tabs-table">
+			<div class="tabs-container">
+				<ul class="tabs-list">
+					<li><a href="#tab1">Tab One</a></li>
+					<li><a href="#tab2">Tab Two</a></li>
+					<li><a href="#tab3">Tab Three</a></li>
+					<li><a href="#tab4">Tab Four</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="content-table">
+			<div id="tab1">This is first div content.</div>
+			<div id="tab2">This is second div content.</div>
+			<div id="tab3">This is third div content.</div>
+			<div id="tab4">This is fourth div content.</div>
+		</div>
+
 		<footer> 
 			This is a footer!
 		</footer>
 
 		<script type="text/javascript">
+			//standard tabs
 			$("body").on("click", ".tabs li",function(evt) { 
 				var tabId, containerId, $myContent, $myContainer, undefined, $this = $(this); 
 				evt.preventDefault(); 
@@ -103,6 +170,21 @@
 			})
 			//init
 			$(".tabs").find("li.selected").trigger("click");
+
+
+			//display:table tabs
+			$("body").on("click",".tabs-list>li",function() { 
+				var $this = $(this), myTarget, $myContent; 
+
+				//catch the click on the li, so need to get the anchor for the href
+				myTarget = $this.find("a").attr("href");
+				$myContent = $(myTarget); 
+				$myContent.siblings().removeClass("open-tab").addClass("closed-tab");
+				$myContent.removeClass("closed-tab").addClass("open-tab");
+
+				$this.siblings().removeClass("selected"); 
+				$this.addClass("selected"); 
+			})
 		</script>
 	</body>
 </html>

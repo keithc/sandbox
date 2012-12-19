@@ -1,0 +1,148 @@
+<html>
+	<head>
+		<title>binary trees</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<style>
+			div { 
+				margin-left:15px;
+				padding:3px 0;
+			}
+		</style>
+	</head>
+	<body>
+		<h2>Binary Trees for fun and profit(???)</h2>
+		<script type="text/javascript">
+			//Tree object
+			function Tree (rootNode) { 
+				this.rootNode = rootNode; 
+			}
+
+			Tree.prototype.insertNode = function(node, parentNode) { 
+				if (!parentNode) { 
+					parentNode = this.rootNode; 
+				}
+
+				if (node.id < parentNode.id) { 
+					if (!parentNode.left) { 
+						parentNode.left = node; 
+					}
+					else{
+						this.insertNode(node, parentNode.left); 
+					}
+				}
+				else { 	
+					if (!parentNode.right) { 
+						parentNode.right = node; 
+					}
+					else{
+						this.insertNode(node, parentNode.right); 
+					}
+				}
+			}
+
+			Tree.prototype.findOpenNode= function(startNode) { 
+				if (!startNode){ 
+					startNode = this.rootNode; 
+				}
+				
+
+				//if either pointer empty, return me
+				if (!startNode.left || !startNode.right) { 
+					return startNode;
+				}
+				//move to the next node with an open pointer
+				if (startNode.left)
+				{
+					return this.findOpenNode(startNode.left); 
+				}
+				return this.findOpenNode(startNode.right);
+			}
+
+			Tree.prototype.deleteNode = function(node) { 
+				console.log("deleting node:" + node);
+			}
+
+			Tree.prototype.htmlRender = function(startNode, element) { 
+				if (!startNode)  { 
+					startNode = this.rootNode; 
+				}
+
+				if (!element) { 
+					element = $("body"); 
+				}
+
+				var newElement = startNode.htmlRender(); 
+				element.append(newElement); //TODO: test element for jquery
+				console.log("startNode.id: " + startNode.id);
+				//traverse - move to helper
+				if (!startNode.left && !startNode.right) { 
+					return; 
+				}
+
+				if (startNode.left) { 
+					console.log("rendering left: " + startNode.left.id)
+					this.htmlRender(startNode.left, newElement);
+				}
+				if (startNode.right){
+					console.log("rendering right: " + startNode.right.id)
+					this.htmlRender(startNode.right, newElement);
+				}
+				
+				return; 
+			}
+
+			//TreeNode object
+			function TreeNode(id) { 
+				this.id = id;
+				this.left = undefined; 
+				this.right= undefined;
+			}
+
+			TreeNode.prototype.htmlRender = function() { 
+				return $("<div>")
+						.append("ID: " + this.id + 
+								" Left: " + (this.left ? this.left.id : "null") + 
+								" Right: " + (this.right ? this.right.id : "null"));
+			}
+
+			Array.prototype.shuffle = function () { 
+				var m = this.length, t, i;
+				
+				// While there remain elements to shuffle…
+  				while (m) {
+				    // Pick a remaining element…
+				    i = Math.floor(Math.random() * m--);
+
+				    // And swap it with the current element.
+				    t = this[m];
+				    this[m] = this[i];
+				    this[i] = t;
+  				}
+  				//return array;
+			};
+			//*** *** *** *** *** *** *** 
+			//init & run like the wind
+			var maxNodes=50;
+			var sourceData = [];
+			//array of numbers
+			for (var i=0; i<maxNodes; i++) { 
+				sourceData.push(i); 
+			} 
+			//randomize
+			sourceData.shuffle(); 
+
+			var	rootNode = new TreeNode(sourceData[0]); 
+			var	myTree = new Tree(rootNode);
+
+			for (var i=1; i<maxNodes; i++){
+				var myNode = new TreeNode(sourceData[i]); 
+				myTree.insertNode(myNode);
+			}
+			console.log(myTree); 
+			myTree.htmlRender();
+
+			
+
+		</script>
+	</body>
+</html>
