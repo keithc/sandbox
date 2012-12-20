@@ -3,17 +3,31 @@
 		<title>binary trees</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 		<style>
-			body { font-family: helvetica;}
+			body { font-family: sans-serif;}
 			div { 
 				margin-left:15px;
 				padding:3px 0;
 			}
-			div.left { 
-				float:left;
+			#htmlTree { 
+				width:800px;
 			}
-			div.right { 
-				float:right;
-				clear:left;
+			.tree-row { 
+				list-style-type:none;
+				text-align:center;
+				width:100%;
+			}
+			.tree-row>li {
+				display:inline;
+				border:1px solid black;
+				padding:.5em;
+				-webkit-border-radius: 12px; /* Safari 3-4, iOS 1-3.2, Android ≤1.6 */
+          		border-radius: 12px; /* Opera 10.5, IE9+, Safari 5, Chrome, Firefox 4+, iOS 4, Android 2.1+ */
+          		height: 2em;
+			}
+		
+			.tree-cell-inner { display: inline-block;}
+			.clear { 
+				clear:both;
 			}
 			canvas { border: 1px solid black;}
 		</style>
@@ -21,8 +35,13 @@
 	<body>
 		<h2>Binary Trees for fun and profit(???)</h2>
 		<p>Tree data: <span id="rawData"></span></p> 
-		<p>Depth traversal: <span id="traverseDepth"></span></p>
+		<p>Depth traversal, pre-order: <span id="traverseDepthPre"></span></p>
+		<p>Depth traversal, in-order: <span id="traverseDepthIn"></span></p>
+		<p>Depth traversal, post-order: <span id="traverseDepthPost"></span></p>
 		<p>Breadth traversal: <span id="traverseBreadth"></span></p>
+		<p>HTML rendering (uses post-order depth traversal):</p>
+		<div id="htmlTree"></div>
+		<div class="clear"></div>
 		<p>Canvas rendering (uses depth traversal):</p>
 		<canvas id="canvas" height="600" width="900"></canvas>
 
@@ -38,9 +57,7 @@
 				}
 
 				if (node.id < parentNode.id) { 
-					if (!parentNode.left) { 
-						//console.log("going left" + node.id);
-						node.cssClass = "left"; 
+					if (!parentNode.left) {  
 						parentNode.left = node; 
 					}
 					else{
@@ -49,8 +66,6 @@
 				}
 				else { 	
 					if (!parentNode.right) { 
-						//console.log("going right" + node.id);
-						node.cssClass = "right";
 						parentNode.right = node; 
 					}
 					else{
@@ -59,33 +74,43 @@
 				}
 			}
 
-			Tree.prototype.traverseDepth = function(startNode, processFunc) { 
+			Tree.prototype.traverseDepth = function(startNode, visit, order) { 
 				var depth=0, width=0; // cheating for ease of rendering
 				function traverseNode(node) { 
 					if (node) { 
 						depth++;  
-						//move between left & right subtrees to traverse to leaf before process
-						if (processFunc){
-							//processNode.apply(node, processNodeArgs); 	
-							processFunc.call(this, node, depth, width); //could add depth & width to each node...
+						//pre-order
+						if (visit && order==="pre") { 
+							visit.call(this, node, depth, width); //could add depth & width to each node...
 						}
+
 						//left subtree
 						if (node.left) { 
 							width -= 15; 
-							console.log("traverse left to: " + node.left.id + " depth: " + depth + " width: " + width);
+							//console.log("traverse left to: " + node.left.id + " depth: " + depth + " width: " + width);
 							traverseNode(node.left); 
 							width += 15; 
+						}
+						//in-order
+						if (visit && order==="in"){	
+							visit.call(this, node, depth, width); //could add depth & width to each node...
 						}
 
 						//right subtree
 						if (node.right) { 
 							width += 15; 
-							console.log("traverse right to: " + node.right.id + " depth: " + depth + " width: " + width);
+							//console.log("traverse right to: " + node.right.id + " depth: " + depth + " width: " + width);
 							traverseNode(node.right);
 							width -=15;  
+						}
+						if (visit && order==="post"){	
+							visit.call(this, node, depth, width); //could add depth & width to each node...
 						}	
 						depth--; 			
 					}
+				}
+				if (!order) { 
+					order = "in";
 				}
 				if (!startNode) { 
 					startNode = this.rootNode; 
@@ -93,15 +118,15 @@
 				traverseNode(startNode); 
 			}
 
-			Tree.prototype.traverseBreadth = function(startNode, processFunc) { 
+			Tree.prototype.traverseBreadth = function(startNode, visit) { 
 				//strategy: process node, put node's children in a queue (left then right), dequeue node and recurse
 				var myQueue = new queue();
 
 				function traverseNode(node) {
 					if (!node) { return; } //end of queue
 
-					if (processFunc) { 
-						processFunc.call(this,node); 
+					if (visit) { 
+						visit.call(this,node); 
 					} 
 					
 					if (node.left) { 
@@ -131,43 +156,26 @@
 			}
 
 			Tree.prototype.canvasRender = function(startNode) { 
-				var node = startNode; 
-				//this.traverseBreadth(startNode, writeCanvasText);
 				this.traverseDepth(startNode, writeCanvasText);
-				//this.traverseDepth(startNode, foo);
+			}
+
+			Tree.prototype.htmlRender = function(startNode, targetElement) { 
+				this.traverseDepth(startNode, writeHtmlNodes, "post"); //post order so the depths will come out in (reversed) order, then flip
+				//TODO: pass in target element so it can get to the visit function
+				var ele = $(targetElement); 
+				var children = ele.children().get().reverse(); 
+				ele.append(children); 
+			}
+
+			function writeHtmlNodes(node, depth) { 
+				var myRow = $("ul#tree-row-" + depth); 
+				if (myRow.length===0) { 
+					myRow = $("<ul>").attr("id","tree-row-" + depth).addClass("tree-row"); 
+				}
+				$("#htmlTree").append(myRow.append(node.htmlRender()));
 
 			}
-Tree.prototype.htmlRender = function(startNode, element) { 
 
-
-				if (!startNode)  { 
-					startNode = this.rootNode; 
-				}
-
-				if (!element) { 
-					element = $("body"); 
-				}
-//				this.traverseDepth(startNode, startNode.htmlRender, [element] );
-
-				var newElement = startNode.htmlRender(); 
-				element.append(newElement); //TODO: test element for jquery
-				//console.log("startNode.id: " + startNode.id);
-				//traverse - move to helper
-				if (!startNode.left && !startNode.right) { 
-					return; 
-				}
-
-				if (startNode.left) { 
-					console.log("rendering left: " + startNode.left.id)
-					this.htmlRender(startNode.left, newElement);
-				}
-				if (startNode.right){
-					console.log("rendering right: " + startNode.right.id)
-					this.htmlRender(startNode.right, newElement);
-				}
-				
-				return; 
-			}
 			//TreeNode object
 			function TreeNode(id) { 
 				this.id = id;
@@ -176,17 +184,11 @@ Tree.prototype.htmlRender = function(startNode, element) {
 				this.cssClass= undefined; 
 			}
 
-			TreeNode.prototype.htmlRender = function(parentElement) { 
-				//if parentElement? test for jquery
-				return $("<div>")
-						.append("ID: " + this.id + 
-								" Left: " + (this.left ? this.left.id : "null") + 
-								" Right: " + (this.right ? this.right.id : "null"))
-						.addClass(this.cssClass);
-				//parentElement.append(ele); 
-
+			TreeNode.prototype.htmlRender = function(){ 
+				//switch to jquery fragments? 
+				//return $("<li>").attr("tree-cell-id",this.id).addClass("tree-cell").append("<div class='tree-cell-inner'><div>" + this.id + "</div><span class='left'>" + (this.left ? this.left.id : "undf") + "</span><span class='right'>" + (this.right ? this.right.id : "undf") + "</span></div>" );
+				return $("<li>").attr("tree-cell-id",this.id).append(this.id + "   L=" + (this.left ? this.left.id : "undf") + " R=" + (this.right ? this.right.id : "undf") );
 			}
-
 			Array.prototype.shuffle = function () { 
 				var m = this.length, t, i;
 				
@@ -249,9 +251,21 @@ Tree.prototype.htmlRender = function(startNode, element) {
 			}
 
 			var tempArr = [];
-			ele = document.getElementById("traverseDepth");
+			ele = document.getElementById("traverseDepthPre");
 			if (ele) {
-				myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)});
+				myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "pre");
+				ele.innerHTML = tempArr.toString(); 
+			}
+			tempArr=[];
+			ele = document.getElementById("traverseDepthIn");
+			if (ele) {
+				myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
+				ele.innerHTML = tempArr.toString(); 
+			}
+			tempArr=[];
+			ele = document.getElementById("traverseDepthPost");
+			if (ele) {
+				myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "post");
 				ele.innerHTML = tempArr.toString(); 
 			}
 			tempArr=[];
@@ -261,12 +275,13 @@ Tree.prototype.htmlRender = function(startNode, element) {
 				ele.innerHTML = tempArr.toString(); 
 			}
 
+			ele = document.getElementById("htmlTree"); 
+			if (ele) { 
+				myTree.htmlRender(rootNode, ele); 
+			}
 
 
 			console.log(myTree); 
-
-			//myTree.traverseDepth(myTree.htmlRender())
-			//myTree.htmlRender();
 
 			//todo: namespace to a helper
 			//init canvas
@@ -280,17 +295,10 @@ Tree.prototype.htmlRender = function(startNode, element) {
 			var yLoc=10; 
 
 			function writeCanvasText(node, depth, width) {//, xLoc, yLoc) {
-				var xStep=20, yStep=10;
-				//if (!xLoc) {xLoc = center}; //{xLoc = 15*counter}
-				//if (!yLoc) {yLoc = yLoc*11}; //{yLoc = 12*counter}
-				xLoc = center + width; 
-
-				//if (node.cssClass === "left") {
-				//	xLoc -= xStep; 
-				//}
-				//else if (node.cssClass==="right") { 
-				//	xLoc += xStep* 2; 
-				//}
+				var xLoc = center + width, 
+					yStep=30,
+					yLoc = depth*yStep;
+	
 				yLoc = depth*30;
 				context.fillStyle = width < 0 ? "blue" : "red";
 				context.font = "14px san-serif"; 
@@ -301,8 +309,6 @@ Tree.prototype.htmlRender = function(startNode, element) {
 				if (!node.left) { yLoc -= yStep} //if we hit a stop, move back up
 			}
 
-			//write id's
-			//myTree.traverseDepth(writeCanvasText, [node]);
 			myTree.canvasRender(); 
 
 		</script>
