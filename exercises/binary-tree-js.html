@@ -15,14 +15,19 @@
 				list-style-type:none;
 				text-align:center;
 				width:100%;
+				margin:0;
+				padding:0;
+				position:relative; /* so li's can go absolute */
+				height:3em;
 			}
 			.tree-row>li {
-				display:inline;
+				display:inline-block;
 				border:1px solid black;
+				height:1.5em;
 				padding:.5em;
 				-webkit-border-radius: 12px; /* Safari 3-4, iOS 1-3.2, Android ≤1.6 */
           		border-radius: 12px; /* Opera 10.5, IE9+, Safari 5, Chrome, Firefox 4+, iOS 4, Android 2.1+ */
-          		height: 2em;
+          		position:absolute; /*left position will be dynamic in js*/
 			}
 		
 			.tree-cell-inner { display: inline-block;}
@@ -87,24 +92,23 @@
 						//left subtree
 						if (node.left) { 
 							width -= 15; 
-							//console.log("traverse left to: " + node.left.id + " depth: " + depth + " width: " + width);
 							traverseNode(node.left); 
 							width += 15; 
 						}
 						//in-order
 						if (visit && order==="in"){	
-							visit.call(this, node, depth, width); //could add depth & width to each node...
+							visit.call(this, node, depth, width);
 						}
 
 						//right subtree
 						if (node.right) { 
 							width += 15; 
-							//console.log("traverse right to: " + node.right.id + " depth: " + depth + " width: " + width);
 							traverseNode(node.right);
 							width -=15;  
 						}
+						//post-order
 						if (visit && order==="post"){	
-							visit.call(this, node, depth, width); //could add depth & width to each node...
+							visit.call(this, node, depth, width);
 						}	
 						depth--; 			
 					}
@@ -121,14 +125,12 @@
 			Tree.prototype.traverseBreadth = function(startNode, visit) { 
 				//strategy: process node, put node's children in a queue (left then right), dequeue node and recurse
 				var myQueue = new queue();
-
 				function traverseNode(node) {
 					if (!node) { return; } //end of queue
 
 					if (visit) { 
 						visit.call(this,node); 
 					} 
-					
 					if (node.left) { 
 						myQueue(node.left); //enqueue
 					} 
@@ -160,34 +162,91 @@
 			}
 
 			Tree.prototype.htmlRender = function(startNode, targetElement) { 
-				this.traverseDepth(startNode, writeHtmlNodes, "post"); //post order so the depths will come out in (reversed) order, then flip
+				this.traverseDepth(startNode, writeHtmlNodes, "pre"); //postorder so the depths will come out in (reversed) order, then flip
 				//TODO: pass in target element so it can get to the visit function
 				var ele = $(targetElement); 
-				var children = ele.children().get().reverse(); 
+				var children = ele.children();//.get().reverse(); 
 				ele.append(children); 
 			}
-
+			//todo: get the target element passed in
 			function writeHtmlNodes(node, depth) { 
-				var myRow = $("ul#tree-row-" + depth); 
+				var myRow = $("ul#tree-row-" + depth); //TODO: stop selecting the row on every node -memoize it - store it on the ul as a map? 
 				if (myRow.length===0) { 
-					myRow = $("<ul>").attr("id","tree-row-" + depth).addClass("tree-row"); 
+					myRow = $("<ul>", { 
+								id: "tree-row-" + depth, 
+								addClass: "tree-row",
+							});	
+					$("#htmlTree").append(myRow); 
 				}
-				$("#htmlTree").append(myRow.append(node.htmlRender()));
+				
+				//TODO: stop writing the row on every node
+				var ele = node.htmlRender(); 
+				//$("#htmlTree").append(myRow.append(node.htmlRender()));
+				myRow.append(ele);
+
+				console.log("myleft: " + ele[0].offsetLeft + " width: " + ele.outerWidth());
+				//tell my children nodes where their left edges should be
+				//would be cleaner inside the node render, but need to change that to have the DOM write happen there to get left/width
+				if (node.left || node.right) { 
+					var myLeft=ele[0].offsetLeft,
+						myWidth=ele[0].offsetWidth; //or ele.outerWidth() + left
+					if (node.left) { 
+						node.left.rightEdge = myLeft; 
+					}
+					if (node.right) { 
+						node.right.leftEdge = myLeft + myWidth; 
+					}
+				}	
+				postProcessHtmlTree(); 
 
 			}
+			function postProcessHtmlTree() { 
+				//one approach - grid
+				//find the row with the most li's; give all the rows (hidden) li's to create a grid; 
+				//then, start at row 1, get my left/right elements, find those on the next row and make them my position -1/+1
+				//row with most li's (nodes) 
+				//var maxNodes =0; 
+				//$("#htmlTree").children("ul").each(function(index,item) { 
+				//	var myNodes = $(item).children("li").length; 
+				//	maxNodes = myNodes > maxNodes ? myNodes : maxNodes; 
+				//});
+				//give all rows (ul's) maxNodex # of cells (li's)
+				//($"#htmlTree").children("")
 
+				//second approach - for each element in this row, find my left & right in the row below and abs position them below me
+
+			}
+			//boo to inline styles, but need to dynamically position
+			function getNodeCss(node) { 
+				if (node.leftEdge) { 
+					//return {"left",node.leftEdge]
+					return {"left": node.leftEdge}
+				}
+				else if (node.rightEdge){ 
+					return {"right": node.rightEdge}
+				} 
+				return undefined; 
+			}
 			//TreeNode object
 			function TreeNode(id) { 
 				this.id = id;
+				this.name=id;
 				this.left = undefined; 
 				this.right= undefined;
 				this.cssClass= undefined; 
 			}
 
-			TreeNode.prototype.htmlRender = function(){ 
-				//switch to jquery fragments? 
-				//return $("<li>").attr("tree-cell-id",this.id).addClass("tree-cell").append("<div class='tree-cell-inner'><div>" + this.id + "</div><span class='left'>" + (this.left ? this.left.id : "undf") + "</span><span class='right'>" + (this.right ? this.right.id : "undf") + "</span></div>" );
-				return $("<li>").attr("tree-cell-id",this.id).append(this.id + "   L=" + (this.left ? this.left.id : "undf") + " R=" + (this.right ? this.right.id : "undf") );
+			TreeNode.prototype.htmlRender = function(){  
+				var myCss = getNodeCss(this);
+				return $("<li>", {
+							id: "tree-cell-" + this.id, 
+							text: this.id,
+							"data-left" : (this.left ? this.left.id : undefined), 
+							"data-right" : (this.right ? this.right.id : undefined),
+							css: myCss ? myCss : ""  
+						}); 
+
+				
 			}
 			Array.prototype.shuffle = function () { 
 				var m = this.length, t, i;
@@ -279,7 +338,6 @@
 			if (ele) { 
 				myTree.htmlRender(rootNode, ele); 
 			}
-
 
 			console.log(myTree); 
 
