@@ -30,7 +30,19 @@
           		position:absolute; /*left position will be dynamic in js*/
 			}
 		
-			.tree-cell-inner { display: inline-block;}
+			.tree-cell-inner { 
+				display: inline-block;
+			}
+			.node-left { 
+				float:left; 
+				font-size:8px;
+				margin: 60% 0 0 0;
+			}
+			.node-right { 
+				float:right; 
+				font-size:8px;
+				margin:60% 0 0 0;
+			}
 			.clear { 
 				clear:both;
 			}
@@ -158,7 +170,7 @@
 			}
 
 			Tree.prototype.canvasRender = function(startNode) { 
-				this.traverseDepth(startNode, writeCanvasText);
+				this.traverseDepth(startNode, canvasHelper.writeCanvasText);
 			}
 
 			Tree.prototype.htmlRender = function(startNode, targetElement) { 
@@ -191,39 +203,22 @@
 					var myLeft=ele[0].offsetLeft,
 						myWidth=ele[0].offsetWidth; //or ele.outerWidth() + left
 					if (node.left) { 
-						node.left.rightEdge = myLeft; 
+						node.left.rightEdge = myLeft - myWidth; 
 					}
 					if (node.right) { 
 						node.right.leftEdge = myLeft + myWidth; 
 					}
 				}	
-				postProcessHtmlTree(); 
-
 			}
-			function postProcessHtmlTree() { 
-				//one approach - grid
-				//find the row with the most li's; give all the rows (hidden) li's to create a grid; 
-				//then, start at row 1, get my left/right elements, find those on the next row and make them my position -1/+1
-				//row with most li's (nodes) 
-				//var maxNodes =0; 
-				//$("#htmlTree").children("ul").each(function(index,item) { 
-				//	var myNodes = $(item).children("li").length; 
-				//	maxNodes = myNodes > maxNodes ? myNodes : maxNodes; 
-				//});
-				//give all rows (ul's) maxNodex # of cells (li's)
-				//($"#htmlTree").children("")
-
-				//second approach - for each element in this row, find my left & right in the row below and abs position them below me
-
-			}
+			
 			//boo to inline styles, but need to dynamically position
+			//output of this can be used in a jquery css function call
 			function getNodeCss(node) { 
 				if (node.leftEdge) { 
-					//return {"left",node.leftEdge]
 					return {"left": node.leftEdge}
 				}
 				else if (node.rightEdge){ 
-					return {"right": node.rightEdge}
+					return {"left": node.rightEdge}
 				} 
 				return undefined; 
 			}
@@ -236,17 +231,29 @@
 				this.cssClass= undefined; 
 			}
 
-			TreeNode.prototype.htmlRender = function(){  
+			TreeNode.prototype.htmlRender = function(showChildren){  
+				if (!showChildren) { showChildren = true};
 				var myCss = getNodeCss(this);
-				return $("<li>", {
+				var ele = $("<li>", {
 							id: "tree-cell-" + this.id, 
 							text: this.id,
 							"data-left" : (this.left ? this.left.id : undefined), 
 							"data-right" : (this.right ? this.right.id : undefined),
 							css: myCss ? myCss : ""  
 						}); 
-
-				
+				if (this.left && showChildren) { 
+					ele.append($("<div>",{ 
+									text: this.left.id,
+									addClass : "node-left"
+								}))
+				}
+				if (this.right && showChildren){ 			
+					ele.append($("<div>", { 
+									text: this.right.id,
+									addClass : "node-right"
+						})); 
+				}
+				return ele;
 			}
 			Array.prototype.shuffle = function () { 
 				var m = this.length, t, i;
@@ -287,7 +294,7 @@
 
 			//*** *** *** *** *** *** *** 
 			//init & run like the wind
-			var maxNodes=12;
+			var maxNodes=20;
 			var sourceData = [];
 			//array of numbers
 			for (var i=0; i<maxNodes; i++) { 
@@ -339,34 +346,36 @@
 				myTree.htmlRender(rootNode, ele); 
 			}
 
-			console.log(myTree); 
+			//console.log(myTree); 
 
-			//todo: namespace to a helper
-			//init canvas
-			var canvas = document.getElementById('canvas'),
+			var canvasHelper = (function(){ 
+				//init canvas
+				var canvas = document.getElementById('canvas'),
 				context = canvas.getContext('2d'),
 				canvasWidth = parseInt(canvas.getAttribute("width")), 
-				canvasHeight = parseInt(canvas.getAttribute("height"));
- 
-			var center = canvasWidth/2; 
-			var xLoc = canvasWidth/2, yLoc =0; 
-			var yLoc=10; 
+				canvasHeight = parseInt(canvas.getAttribute("height")),	 
+				center = canvasWidth/2, 
+				xLoc = canvasWidth/2,  
+				yLoc = 10;
 
-			function writeCanvasText(node, depth, width) {//, xLoc, yLoc) {
-				var xLoc = center + width, 
-					yStep=30,
-					yLoc = depth*yStep;
-	
-				yLoc = depth*30;
-				context.fillStyle = width < 0 ? "blue" : "red";
-				context.font = "14px san-serif"; 
-				console.log("writing " +node.id+ " -- depth: " + depth + " width: " + width + " --to :" + xLoc + ":" + yLoc);
-				console.log("----------------------");
-				context.fillText(node.id, xLoc, yLoc);
+				//public 
+				return { 
+					writeCanvasText: function(node, depth, width) {
+						var xLoc = center + width, 
+							yStep=30,
+							yLoc = depth*yStep;
+			
+						yLoc = depth*30;
+						context.fillStyle = width < 0 ? "blue" : "red";
+						context.font = "14px san-serif"; 
+						console.log("writing " +node.id+ " -- depth: " + depth + " width: " + width + " --to :" + xLoc + ":" + yLoc);
+						console.log("----------------------");
+						context.fillText(node.id, xLoc, yLoc);
 
-				if (!node.left) { yLoc -= yStep} //if we hit a stop, move back up
-			}
-
+						if (!node.left) { yLoc -= yStep} //if we hit a stop, move back up
+					}
+				}
+			})(); 
 			myTree.canvasRender(); 
 
 		</script>
