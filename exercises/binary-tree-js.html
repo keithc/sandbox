@@ -303,7 +303,7 @@
 			//targetElement is a jquery element with the html tree inside
 			//this won't be the fastest code ever, but drawing lines costs money
 			function connectNodes(targetElement){
-				function findTopPos(ele) {
+				function findTopPos(ele) {  //http://stackoverflow.com/questions/1350581/how-to-get-an-elements-top-position-relataive-to-the-browsers-window
 					var curtop = 0;
 					var curtopscroll = 0;
 					if (ele.offsetParent) {
