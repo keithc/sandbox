@@ -203,6 +203,64 @@
 				console.log("deleting node:" + node);
 			}
 
+			//recursive - 10-20% slower 
+			//http://jsperf.com/binary-search-tree-find-recursive-vs-non
+			Tree.prototype.findNodeRecursiveButSlower = function(id, startNode) { 
+				function traverseFind(id, node) { 
+					if (!node) { 
+						return node; //not in the tree
+					}
+					else if (id > node.id) { 
+						return traverseFind(id, node.right);
+					}
+					else if (id < node.id) { 
+						return traverseFind(id, node.left);
+					}
+					else {  
+						return node; //found it 
+					}
+				}
+				if (!startNode) { 
+					startNode = this.rootNode; 
+				}
+				return traverseFind(id, startNode); 
+			}
+
+			Tree.prototype.findNode = function(id, node) { 
+				if (!node) { 
+					node = this.rootNode; 
+				}
+
+				while (node){
+					if (id > node.id) { 
+						node = node.right;  
+					}
+					else if (id > node.id) { 
+						node = node.left; 
+					}
+					else { 
+						break ; //found it
+					}
+				}
+				return node; 
+			}
+			// --- ---
+			//credit to Nicholas Zakas
+			Tree.prototype.toArray = function() { 
+		        var result = [];
+		        
+		        this.traverseDepth(this.rootNode, function(node){
+		            result.push(node.id);
+		        }, "in");
+		        
+		        return result;
+			}
+
+
+			Tree.prototype.toString = function() { 
+				return this.toArray().toString(); 
+			}
+
 			Tree.prototype.size = function(startNode) { 
 				var length=0; 
 				this.traverseDepth(startNode, function(node) { 
@@ -210,6 +268,7 @@
 				});
 				return length;
 			}
+			// --- ---
 
 			Tree.prototype.canvasRender = function(startNode) { 
 				this.traverseDepth(startNode, canvasHelper.writeCanvasText);
@@ -238,7 +297,7 @@
 				//$("#htmlTree").append(myRow.append(node.htmlRender()));
 				myRow.append(ele);
 
-				console.log("myleft: " + ele[0].offsetLeft + " width: " + ele.outerWidth());
+				//console.log("myleft: " + ele[0].offsetLeft + " width: " + ele.outerWidth());
 				//tell my children nodes where their left edges should be
 				//would be cleaner inside the node render, but need to change that to have the DOM write happen there to get left/width
 				if (node.left || node.right) { 
@@ -370,6 +429,7 @@
 						tempArr=[];
 						ele = document.getElementById("traverseDepthIn");
 						if (ele) {
+							//also myTree.toArray() or myTree.toString(); 
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
 							ele.innerHTML = tempArr.toString(); 
 						}
@@ -390,6 +450,11 @@
 						if (ele) { 
 							myTree.htmlRender(rootNode, ele); 
 						}
+
+						//find a random number
+						var idToFind = Math.floor(Math.random() * maxNodes); 
+						console.log("FINDING: " + idToFind);
+						console.log(myTree.findNode(idToFind)); 
 					}
 				}
 			})(); 
@@ -416,8 +481,8 @@
 						yLoc = depth*30;
 						context.fillStyle = width < 0 ? "blue" : "red";
 						context.font = "14px san-serif"; 
-						console.log("writing " +node.id+ " -- depth: " + depth + " width: " + width + " --to :" + xLoc + ":" + yLoc);
-						console.log("----------------------");
+					//	console.log("writing " +node.id+ " -- depth: " + depth + " width: " + width + " --to :" + xLoc + ":" + yLoc);
+						//console.log("----------------------");
 						context.fillText(node.id, xLoc, yLoc);
 
 						if (!node.left) { yLoc -= yStep} //if we hit a stop, move back up
