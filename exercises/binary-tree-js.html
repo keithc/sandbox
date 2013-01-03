@@ -27,7 +27,8 @@
 				padding:.5em;
 				-webkit-border-radius: 12px; /* Safari 3-4, iOS 1-3.2, Android ≤1.6 */
           		border-radius: 12px; /* Opera 10.5, IE9+, Safari 5, Chrome, Firefox 4+, iOS 4, Android 2.1+ */
-          		position:absolute; /*left position will be dynamic in js*/
+          		margin-left:10px;
+          	/*	position:absolute; /*left position will be dynamic in js*/*/
 			}
 		
 			.tree-cell-inner { 
@@ -203,7 +204,25 @@
 				console.log("deleting node:" + node);
 			}
 
-			//recursive - 10-20% slower 
+			Tree.prototype.findNode = function(id, node) { 
+				if (!node) { 
+					node = this.rootNode; 
+				}
+
+				while (node){
+					if (id > node.id) { 
+						node = node.right;  
+					}
+					else if (id > node.id) { 
+						node = node.left; 
+					}
+					else { 
+						break ; //found it
+					}
+				}
+				return node; 
+			}
+			//recursive - 80% slower 
 			//http://jsperf.com/binary-search-tree-find-recursive-vs-non
 			Tree.prototype.findNodeRecursiveButSlower = function(id, startNode) { 
 				function traverseFind(id, node) { 
@@ -226,32 +245,14 @@
 				return traverseFind(id, startNode); 
 			}
 
-			Tree.prototype.findNode = function(id, node) { 
-				if (!node) { 
-					node = this.rootNode; 
-				}
-
-				while (node){
-					if (id > node.id) { 
-						node = node.right;  
-					}
-					else if (id > node.id) { 
-						node = node.left; 
-					}
-					else { 
-						break ; //found it
-					}
-				}
-				return node; 
-			}
+			
 			// --- ---
-			//credit to Nicholas Zakas
+			//credit to Nicholas Zakas for these
 			Tree.prototype.toArray = function() { 
 		        var result = [];
 		        
 		        this.traverseDepth(this.rootNode, function(node){
-		            result.push(node.id);
-		        }, "in");
+		            result.push(node.id);}, "in");
 		        
 		        return result;
 			}
@@ -275,7 +276,21 @@
 			}
 
 			Tree.prototype.htmlRender = function(startNode, targetElement) { 
-				this.traverseDepth(startNode, writeHtmlNodes, "pre"); //postorder so the depths will come out in (reversed) order, then flip
+				var contents = []; 
+
+				this.traverseDepth(startNode, function(node){
+		            contents.push(node.htmlRender());}, "pre");
+
+		        console.log("RENDER OUPTUT: "); 
+		        console.log(contents);
+
+
+
+
+
+
+
+				this.traverseDepth(startNode, writeHtmlNodes, "pre"); 
 				//TODO: pass in target element so it can get to the visit function
 				var ele = $(targetElement); 
 				var children = ele.children();//.get().reverse(); 
@@ -293,25 +308,52 @@
 				}
 				
 				//TODO: stop writing the row on every node
-				var ele = node.htmlRender(); 
+				var ele = node.htmlRender(true); 
 				//$("#htmlTree").append(myRow.append(node.htmlRender()));
 				myRow.append(ele);
 
-				//console.log("myleft: " + ele[0].offsetLeft + " width: " + ele.outerWidth());
 				//tell my children nodes where their left edges should be
 				//would be cleaner inside the node render, but need to change that to have the DOM write happen there to get left/width
-				if (node.left || node.right) { 
-					var myLeft=ele[0].offsetLeft,
-						myWidth=ele[0].offsetWidth; //or ele.outerWidth() + left
-					if (node.left) { 
-						node.left.rightEdge = myLeft - myWidth; 
-					}
-					if (node.right) { 
-						node.right.leftEdge = myLeft + myWidth; 
-					}
-				}	
+				//if (node.left || node.right) { 
+			//		var myLeft=ele[0].offsetLeft,
+		//				myWidth=ele[0].offsetWidth; //or ele.outerWidth() + left
+	//				if (node.left) { 
+//						node.left.rightEdge = myLeft - myWidth; 
+//					}
+					//if (node.right) { 
+				//		node.right.leftEdge = myLeft + myWidth; 
+			//		}
+		//		}	
+			}
+
+			// *** TreeNode object *** 
+			function TreeNode(id) { 
+				this.id = id;
+				this.left = undefined; 
+				this.right= undefined;
 			}
 			
+			TreeNode.prototype.htmlRender = function(showChildren) { 
+				function renderChildId(childId, css) {
+					return ("<div class='" + css + "'>" + childId + "</div>");
+				}
+
+				var ele = "<li id='tree-cell-" + this.id 
+							+ "' data-left='" + (this.left ? this.left.id : undefined) 
+							+ "' data-right='" + (this.right ? this.right.id : undefined) 
+							+ "'>" + this.id; 
+				if (showChildren) { 
+					if (this.left) { 
+						ele += renderChildId(this.left.id, "node-left"); 
+					}
+					if (this.right) { 
+						ele += renderChildId(this.right.id, "node-right"); 
+					}
+				}
+				ele += "</li>"
+				return ele; 
+			}
+
 			//boo to inline styles, but need to dynamically position
 			//output of this can be used in a jquery css function call
 			function getNodeCss(node) { 
@@ -323,16 +365,9 @@
 				} 
 				return undefined; 
 			}
-			//TreeNode object
-			function TreeNode(id) { 
-				this.id = id;
-				this.name=id;
-				this.left = undefined; 
-				this.right= undefined;
-				this.cssClass= undefined; 
-			}
 
-			TreeNode.prototype.htmlRender = function(showChildren){  
+			//super slow compared to string concat http://jsperf.com/jquery-dom-create-vs-string
+			TreeNode.prototype.htmlRenderjQuery = function(showChildren){  
 				if (!showChildren) { showChildren = true};
 				var myCss = getNodeCss(this);
 				var ele = $("<li>", {
