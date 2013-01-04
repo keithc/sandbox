@@ -1,13 +1,10 @@
+<!doctype html>
 <html>
 	<head>
 		<title>binary trees</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 		<style>
 			body { font-family: sans-serif;}
-			div { 
-				margin-left:15px;
-				padding:3px 0;
-			}
 			#htmlTree { 
 				width:800px;
 			}
@@ -23,7 +20,8 @@
 			.tree-row>li {
 				display:inline-block;
 				border:1px solid black;
-				height:1.5em;
+				/*height:1.5em;*/
+				margin-bottom:10px;
 				padding:.5em;
 				/*-webkit-border-radius: 12px; /* Safari 3-4, iOS 1-3.2, Android ≤1.6 */
           		/*border-radius: 12px; /* Opera 10.5, IE9+, Safari 5, Chrome, Firefox 4+, iOS 4, Android 2.1+ */
@@ -48,15 +46,11 @@
 				clear:both;
 			}
 			canvas { border: 1px solid black;}
-			div.line-black{
-				transform-origin: 0 100%;
-  				height: 1px; /* Line width  */
-  				background: #000; /* Black fill */
-			}
-			div.line-blue{
-				transform-origin: 0 100%;
-  				height: 1px; /* Line width */
-  				background: #00F; /* Blue fill */
+
+			.line { 
+				position:absolute;
+				height:1px;
+				background:#900;
 			}
 		</style>
 	</head>
@@ -285,25 +279,43 @@
 				this.traverseDepth(startNode, canvasHelper.writeCanvasText);
 			}
 
-			//http://monkeyandcrow.com/blog/drawing_lines_with_css3/
-			function createLine(x1,y1, x2,y2,style){
+			//adapted from: http://www.gapjumper.com/research/lines.html
+			function createLine(x1, y1, x2, y2)
+			{
 				console.log(JSON.stringify(arguments));
+				if (x2 < x1)
+				{
+					var temp = x1;
+					x1 = x2;
+					x2 = temp;
+					temp = y1;
+					y1 = y2;
+					y2 = temp;
+				}
+				var line = document.createElement("div");
+				line.className = "line";
 				var length = Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
-				var angle  = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-				var transform = 'rotate('+angle+'deg)';
-
-			    var line = $('<div>')
-			        .appendTo('body')
-			        .addClass(style)
-			        .css({
-			          'position': 'absolute',
-			          'transform': transform
-			        })
-			        .width(length)
-			        .offset({left: x1, top: y1});
-			    
-			  //  return line;
+				line.style.width = length + "px";
+				var isIE = false; 
+				if (isIE)
+				{
+					line.style.top = (y2 > y1) ? y1 + "px" : y2 + "px";
+					line.style.left = x1 + "px";
+					var nCos = (x2-x1)/length;
+					var nSin = (y2-y1)/length;
+					line.style.filter = "progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=" + nCos + ", M12=" + -1*nSin + ", M21=" + nSin + ", M22=" + nCos + ")";
+				}
+				else
+				{
+					var angle = Math.atan((y2-y1)/(x2-x1));
+					line.style.top = y1 + 0.5*length*Math.sin(angle) + "px";
+					line.style.left = x1 - 0.5*length*(1 - Math.cos(angle)) + "px";
+					line.style.MozTransform = line.style.WebkitTransform = line.style.OTransform= "rotate(" + angle + "rad)";
+				}
+				var firstDiv = document.getElementsByTagName('div')[0];
+				firstDiv.parentNode.insertBefore(line,firstDiv); 
 			}
+
 
 			//targetElement is a jquery element with the html tree inside
 			//this won't be the fastest code ever, but drawing lines costs money
@@ -329,9 +341,15 @@
 
 					if (myLeftNodeId != "") {
 						var myLeftEle = document.getElementById("tree-cell-" + myLeftNodeId);
+						//console.log("top OF me: " + item.id + " = " + findTopPos(item));
+						//console.log("my height: " + item.offsetHeight); 
+						//console.log("my bottom: " + (findTopPos(item) + item.offsetHeight));
+						//console.log("LEFT OF me: = " + item.offsetLeft);
+						//console.log("TOP OF left: " + myLeftNodeId + " = " + findTopPos(myLeftEle));
+						//console.log("CENTER OF left:  = " + (myLeftEle.offsetLeft + (myLeftEle.offsetWidth/2)));
 						var x1 = item.offsetLeft; //my left edge x-coord
-						var x2 = myLeftEle.offsetLeft + myLeftEle.offsetWidth; //my left child's right edge x-coord
-						var y1 = findTopPos(item); //my bottom y-coord
+						var x2 = myLeftEle.offsetLeft + (myLeftEle.offsetWidth/2); //my left child's center x-coord
+						var y1 = findTopPos(item) + item.offsetHeight; //my bottom y-coord
 						var y2 = findTopPos(myLeftEle) //.offsetTop; //my left child's top y-coord
 						console.log("connect ID: " + item.id + " to " + myLeftNodeId + " blue: " + x1 + "," + y1 + ":" + x2 +","+y2);
 						createLine(x1,y1,x2,y2,"line-blue"); 
@@ -339,11 +357,11 @@
 					//var x1 = 
 					if (myRightNodeId != "") {
 						var myRightEle = document.getElementById("tree-cell-" + myRightNodeId)
-						var x2 = item.offsetLeft + item.offsetWidth; //my right edge
-						var x1 = myRightEle.offsetLeft; //my right child's left edge
-						var y2 = findTopPos(item) + item.offsetHeight; //my bottom y-coord
-						var y1 = findTopPos(myRightEle); //my right child's top y-coord
-						console.log("connect ID: " + item.id + " to " + myRightNodeId + " black: " + x1 + "," + y1 + ":" + x2 +","+y2);
+						var x1 = item.offsetLeft + item.offsetWidth; //my right edge
+						var x2 = myRightEle.offsetLeft + (myRightEle.offsetWidth/2); //my right child's left edge
+						var y1 = findTopPos(item) + item.offsetHeight; //my bottom y-coord
+						var y2 = findTopPos(myRightEle); //my right child's top y-coord
+						//console.log("connect ID: " + item.id + " to " + myRightNodeId + " black: " + x1 + "," + y1 + ":" + x2 +","+y2);
 						createLine(x1,y1,x2,y2,"line-black"); 
 					}
 
@@ -372,6 +390,7 @@
 					$targetElement.append(row); //append to parent
 					counter++
 				}
+				//drawLRBoxes($targetElement); 
 				//draw lines!
 				connectNodes($targetElement); 
 			}
@@ -551,8 +570,10 @@ var ele = document.getElementById("htmlTree");
 
 			var canvasHelper = (function(){ 
 				//init canvas
-				var canvas = document.getElementById('canvas'),
-				context = canvas.getContext('2d'),
+				var canvas = document.getElementById('canvas'); 
+				if (!canvas) { return false;}
+
+				var context = canvas.getContext('2d'),
 				canvasWidth = parseInt(canvas.getAttribute("width")), 
 				canvasHeight = parseInt(canvas.getAttribute("height")),	 
 				center = canvasWidth/2, 
