@@ -285,42 +285,53 @@
 				var myNode = new TreeNode(sourceData[i]); 
 				myTree.insertNode(myNode);
 			}
-			//debug-ish output
-			var ele = document.getElementById("rawData"); 
-			if (ele) { 
-				ele.innerHTML = sourceData.toString();
-			}
 
-			var tempArr = [];
-			ele = document.getElementById("traverseDepthPre");
-			if (ele) {
-				myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "pre");
-				ele.innerHTML = tempArr.toString(); 
-			}
-			tempArr=[];
-			ele = document.getElementById("traverseDepthIn");
-			if (ele) {
-				myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
-				ele.innerHTML = tempArr.toString(); 
-			}
-			tempArr=[];
-			ele = document.getElementById("traverseDepthPost");
-			if (ele) {
-				myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "post");
-				ele.innerHTML = tempArr.toString(); 
-			}
-			tempArr=[];
-			ele = document.getElementById("traverseBreadth");
-			if (ele) {
-				myTree.traverseBreadth(rootNode, function(node) {tempArr.push(node.id)});
-				ele.innerHTML = tempArr.toString(); 
-			}
 
-			ele = document.getElementById("htmlTree"); 
-			if (ele) { 
-				myTree.htmlRender(rootNode, ele); 
-			}
+			var outputHelper = (function() { 
+				//TODO: methods
+				return { 
+					console.log("IN IT");
+					//debug-ish output
+					var ele = document.getElementById("rawData"); 
+					if (ele) { 
+						ele.innerHTML = sourceData.toString();
+					}
 
+					var tempArr = [];
+					ele = document.getElementById("traverseDepthPre");
+					if (ele) {
+						myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "pre");
+						ele.innerHTML = tempArr.toString(); 
+					}
+					tempArr=[];
+					ele = document.getElementById("traverseDepthIn");
+					if (ele) {
+						myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
+						ele.innerHTML = tempArr.toString(); 
+					}
+					tempArr=[];
+					ele = document.getElementById("traverseDepthPost");
+					if (ele) {
+						myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "post");
+						ele.innerHTML = tempArr.toString(); 
+					}
+					tempArr=[];
+					ele = document.getElementById("traverseBreadth");
+					if (ele) {
+						myTree.traverseBreadth(rootNode, function(node) {tempArr.push(node.id)});
+						ele.innerHTML = tempArr.toString(); 
+					}
+
+					ele = document.getElementById("htmlTree"); 
+					if (ele) { 
+						myTree.htmlRender(rootNode, ele); 
+					}
+				}
+			}); 
+
+			$(document).ready(function() { 
+				outputHelper(); 
+			})
 			//console.log(myTree); 
 
 			var canvasHelper = (function(){ 
