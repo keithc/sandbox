@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
 	<head>
-		<title>binary trees</title>
+		<title>binary search trees</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 		<style>
 			body { font-family: sans-serif;}
 			#htmlTree { 
-				width:600px;
-				background:#EEE;
+				width:700px;
+				background:#ECB275;
 				padding: 10px 0; 
 				border: 1px solid #BBB;
 				border-radius:10px;
@@ -23,20 +23,19 @@
 			}
 			.tree-row>li {
 				display:inline-block;
-				border:1px solid black;
+				border:1px solid #666;
 				height:30px;
 				margin-bottom:10px;
 				padding:.5em;
 				min-width: 35px;
 				
           		margin-left:40px;
-          		color:#FFF;
 				background-color: #07077d;
-			 	background-image: -webkit-gradient(linear, left top, left bottom, from(#07077d), to(#33F)); /* Safari 4+, Chrome */
-				background-image: -webkit-linear-gradient(top, #07077d, #33F); /* Chrome 10+, Safari 5.1+, iOS 5+ */
-				background-image: -moz-linear-gradient(top, #07077d, #33F); /* Firefox 3.6-15 */
-				background-image: -o-linear-gradient(top, #07077d, #33F); /* Opera 11.10-12.00 */
-				background-image: linear-gradient(to bottom, #07077d, #33F); /* Firefox 16+, IE10, Opera 12.50+ */
+			 	background-image: -webkit-gradient(linear, left top, left bottom, from(#EEE), to(#CCC)); /* Safari 4+, Chrome */
+				background-image: -webkit-linear-gradient(top, #EEE, #CCC); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+				background-image: -moz-linear-gradient(top, #EEE, #CCC); /* Firefox 3.6-15 */
+				background-image: -o-linear-gradient(top, #EEE, #CCC); /* Opera 11.10-12.00 */
+				background-image: linear-gradient(to bottom, #EEE, #CCC); /* Firefox 16+, IE10, Opera 12.50+ */
 			}
 		
 			.tree-cell-inner { 
@@ -60,7 +59,7 @@
 			.line { 
 				position:absolute;
 				height:2px;
-				background:#900;
+				background:#600;
 			}
 		</style>
 	</head>
@@ -79,106 +78,81 @@
 
 		<script type="text/javascript">
 			//Tree object
+			//-----------
 			function Tree (rootNode) { 
 				this.rootNode = rootNode; 
 			}
-
-			Tree.prototype.insertNode = function(node, parentNode) { 
-				if (!parentNode) { 
-					parentNode = this.rootNode; 
-				}
-
-				if (node.id < parentNode.id) { 
-					if (!parentNode.left) {  
-						parentNode.left = node; 
-					}
-					else{
-						this.insertNode(node, parentNode.left); 
-					}
-				}
-				else { 	
-					if (!parentNode.right) { 
-						parentNode.right = node; 
-					}
-					else{
-						this.insertNode(node, parentNode.right); 
-					}
-				}
-			}
-
+			
+			//Traversal routines
+			//------------------
+			//Depth-first traversal
+			//In-order is the default, but also included separate methods for pre & post order traversal at the cost of some duplicated code.
+			//Since I wanted to render the tree in HTML, I needed rows. I added a shortcut property to calculate the depth as it recursed.
 			Tree.prototype.traverseDepth = function(startNode, visit, order) { 
-				var depth=0, width=0; // cheating for ease of rendering
+				var depth=0; // cheating for ease of rendering
+				//pre-order processing
 				function traversePreOrder(node) { 
 					if (node) { 
 						depth++;  
 						if (visit) { 
-							visit.call(this, node, depth, width); //could add depth & width to each node...
+							visit.call(this, node, depth); //could add depth & width to each node...
 						}
 
 						//left subtree
 						if (node.left) { 
-							width -= 15; 
 							traversePreOrder(node.left); 
-							width += 15; 
 						}
 
 						//right subtree
 						if (node.right) { 
-							width += 15; 
 							traversePreOrder(node.right);
-							width -=15;  
 						}
 						depth--; 			
 					}
 				}
+				//in-order processing
 				function traverseInOrder(node) { 
 					if (node) { 
 						depth++;  
 						//left subtree
 						if (node.left) { 
-							width -= 15; 
 							traverseInOrder(node.left); 
-							width += 15; 
 						}
 						if (visit) { 
-							visit.call(this, node, depth, width); //could add depth & width to each node...
+							visit.call(this, node, depth); 
 						}
 						//right subtree
 						if (node.right) { 
-							width += 15; 
 							traverseInOrder(node.right);
-							width -=15;  
 						}
 						depth--; 			
 					}
 				}
+				//post-order processing
 				function traversePostOrder(node) { 
 					if (node) { 
 						depth++;  
 
 						//left subtree
 						if (node.left) { 
-							width -= 15; 
 							traversePostOrder(node.left); 
-							width += 15; 
 						}
 
 						//right subtree
 						if (node.right) { 
-							width += 15; 
 							traversePostOrder(node.right);
-							width -=15;  
 						}
 						if (visit) { 
-							visit.call(this, node, depth, width); //could add depth & width to each node...
+							visit.call(this, node, depth); 
 						}
 						depth--; 			
 					}
 				}
-
+				//allow for a specific start node, else default to root
 				if (!startNode) { 
 					startNode = this.rootNode; 
 				}
+				//default to in-order node processing
 				if (!order || order==="in") { 
 					traverseInOrder(startNode);
 				}
@@ -190,6 +164,7 @@
 				}	 
 			}
 
+			//Depth-first traversal
 			Tree.prototype.traverseBreadth = function(startNode, visit) { 
 				//process node, put node's children in a queue (left then right), dequeue node and recurse
 				var myQueue = new queue();
@@ -213,7 +188,32 @@
 				traverseNode(startNode); 
 			}
 
-			//TODO: 
+			//Other Tree methods
+			//------------------
+			//Insert a node, in proper sort order. 
+			Tree.prototype.insertNode = function(node, parentNode) { 
+				if (!parentNode) { 
+					parentNode = this.rootNode; 
+				}
+
+				if (node.id < parentNode.id) { 
+					if (!parentNode.left) {  
+						parentNode.left = node; 
+					}
+					else{
+						this.insertNode(node, parentNode.left); 
+					}
+				}
+				else { 	
+					if (!parentNode.right) { 
+						parentNode.right = node; 
+					}
+					else{
+						this.insertNode(node, parentNode.right); 
+					}
+				}
+			}
+			//TODO: finish me
 			Tree.prototype.deleteNode = function(node) { 
 				console.log("deleting node:" + node);
 			}
