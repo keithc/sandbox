@@ -261,7 +261,7 @@
 					line.style.left = x1 - 0.5*length*(1 - Math.cos(angle)) + "px";
 					line.style.MozTransform = line.style.WebkitTransform = line.style.OTransform= "rotate(" + angle + "rad)";
 				}
-				var firstDiv = document.getElementsByTagName('div')[0];
+				var firstDiv = document.getElementById('htmlTree');
 				firstDiv.parentNode.insertBefore(line,firstDiv); 
 			}
 
@@ -335,7 +335,6 @@
 					$targetElement.append(row); //append to parent
 					counter++
 				}
-				//drawLRBoxes($targetElement); 
 				//draw lines!
 				connectNodes($targetElement); 
 			}
