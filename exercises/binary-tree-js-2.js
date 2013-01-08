@@ -464,32 +464,32 @@
 
 					DebugOutput : function() {
 						//debug-ish output
-						var ele = document.getElementById("rawData"); 
+						var ele = document.getElementById("rawData2"); 
 						if (ele) { 
 							ele.innerHTML = sourceData.toString();
 						}
 
 						var tempArr = [];
-						ele = document.getElementById("traverseDepthPre");
+						ele = document.getElementById("traverseDepthPre2");
 						if (ele) {
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "pre");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseDepthIn");
+						ele = document.getElementById("traverseDepthIn2");
 						if (ele) {
 							//also myTree.toArray() or myTree.toString(); 
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseDepthPost");
+						ele = document.getElementById("traverseDepthPost2");
 						if (ele) {
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "post");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseBreadth");
+						ele = document.getElementById("traverseBreadth2");
 						if (ele) {
 							myTree.traverseBreadth(rootNode, function(node) {tempArr.push(node.id)});
 							ele.innerHTML = tempArr.toString(); 
@@ -542,7 +542,7 @@
 
 			$(document).ready(function() { 
 				//HTML output
-				outputHelper.DebugOutput(); 
+				outputHelper.DebugOutput();
 				//Canvas output
 				//myTree.canvasRender(); 
 			})
