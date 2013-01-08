@@ -261,8 +261,10 @@
 					line.style.left = x1 - 0.5*length*(1 - Math.cos(angle)) + "px";
 					line.style.MozTransform = line.style.WebkitTransform = line.style.OTransform= "rotate(" + angle + "rad)";
 				}
-				var firstDiv = document.getElementsByTagName('div')[0];
-				firstDiv.parentNode.insertBefore(line,firstDiv); 
+				var $body = $("body"); 
+				$body.prepend(line); 
+				//var firstDiv = document.getElementsByTagName('div')[0];
+				//firstDiv.parentNode.insertBefore(line,firstDiv); 
 				//var firstDiv = document.getElementById('htmlTree');
 				//firstDiv.parentNode.insertBefore(line,firstDiv); 
 			}
