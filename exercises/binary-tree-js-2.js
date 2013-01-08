@@ -495,7 +495,7 @@
 							ele.innerHTML = tempArr.toString(); 
 						}
 
-						ele = document.getElementById("htmlTree2"); 
+						ele = document.getElementById("htmlTree"); 
 						if (ele) { 
 							myTree.htmlRender(rootNode, ele); 
 						}
