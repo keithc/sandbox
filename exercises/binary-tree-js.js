@@ -337,14 +337,16 @@
 			})();
 
 			$(document).ready(function() { 
-				outputHelper(); 
+				outputHelper.DebugOutput(); 
 			})
 			//console.log(myTree); 
 
 			var canvasHelper = (function(){ 
 				//init canvas
-				var canvas = document.getElementById('canvas'),
-				context = canvas.getContext('2d'),
+				var canvas = document.getElementById('canvas');
+				if (!canvas) { return false;}
+
+				var context = canvas.getContext('2d'),
 				canvasWidth = parseInt(canvas.getAttribute("width")), 
 				canvasHeight = parseInt(canvas.getAttribute("height")),	 
 				center = canvasWidth/2, 
