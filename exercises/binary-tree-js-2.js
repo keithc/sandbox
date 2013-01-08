@@ -261,6 +261,8 @@
 					line.style.left = x1 - 0.5*length*(1 - Math.cos(angle)) + "px";
 					line.style.MozTransform = line.style.WebkitTransform = line.style.OTransform= "rotate(" + angle + "rad)";
 				}
+				//var firstDiv = document.getElementsByTagName('div')[0];
+				//firstDiv.parentNode.insertBefore(line,firstDiv); 
 				var firstDiv = document.getElementById('htmlTree');
 				firstDiv.parentNode.insertBefore(line,firstDiv); 
 			}
@@ -269,48 +271,32 @@
 			//targetElement is a jquery element with the html tree inside
 			//this won't be the fastest code ever, but drawing lines costs money
 			function connectNodes(targetElement){
-				function findTopPos(ele) {  //http://stackoverflow.com/questions/1350581/how-to-get-an-elements-top-position-relataive-to-the-browsers-window
-					var curtop = 0;
-					var curtopscroll = 0;
-					if (ele.offsetParent) {
-						do {
-							curtop += ele.offsetTop;
-							curtopscroll += ele.offsetParent ? ele.offsetParent.scrollTop : 0;
-						} while (ele = ele.offsetParent);
-
-						return(curtop - curtopscroll);
-					}
-					return 0; 
-				}
-
 				$(targetElement).find("li").each(function(index,item) { 
-
 					var $item = $(item), x1,x2,y1,y2;
 					var myLeftNodeId = $item.data('left'),
-						myRightNodeId = $item.data('right'),
-						fixPos = 10; //TODO: why? margin? 
+						myRightNodeId = $item.data('right');
+
 					//use strict here - 0 == "" is true
 					if (myLeftNodeId !== "") {
-						var myLeftEle = document.getElementById("tree-cell-" + myLeftNodeId);
-						x1 = item.offsetLeft + fixPos; //my left edge x-coord
-						x2 = myLeftEle.offsetLeft + (myLeftEle.offsetWidth/2); //my left child's center x-coord
-						y1 = findTopPos(item) + item.offsetHeight; //my bottom y-coord
-						y2 = findTopPos(myLeftEle) //.offsetTop; //my left child's top y-coord
+						console.log("TOP: " + $item.offset().top + $item.height()); 
+						var $myLeftEle = $("#tree-cell-" + myLeftNodeId);
+						x1 = $item.offset().left; //my left edge x-coord
+						x2 = $myLeftEle.offset().left + ($myLeftEle.outerWidth()/2); //my left child's center x-coord
+						y1 = $item.offset().top + $item.outerHeight(); //findTopPos(item) + item.offsetHeight; //my bottom y-coord
+						y2 = $myLeftEle.offset().top //.offsetTop; //my left child's top y-coord
 						//console.log("connect ID: " + item.id + " to " + myLeftNodeId + " left: " + x1 + "," + y1 + ":" + x2 +","+y2);
 						createLine(x1,y1,x2,y2); 
 					}
 					//var x1 = 
 					if (myRightNodeId != "") {
-						var myRightEle = document.getElementById("tree-cell-" + myRightNodeId)
-						x1 = item.offsetLeft + item.offsetWidth + fixPos; //my right edge
-						x2 = myRightEle.offsetLeft + (myRightEle.offsetWidth/2); //my right child's left edge
-						y1 = findTopPos(item) + item.offsetHeight; //my bottom y-coord
-						y2 = findTopPos(myRightEle); //my right child's top y-coord
+						var $myRightEle = $("#tree-cell-" + myRightNodeId)
+						x1 = $item.offset().left + $item.outerWidth(); //my right edge
+						x2 = $myRightEle.offset().left + ($myRightEle.outerWidth()/2); //my right child's left edge
+						y1 = $item.offset().top + $item.outerHeight(); //my bottom y-coord
+						y2 = $myRightEle.offset().top; //my right child's top y-coord
 						//console.log("connect ID: " + item.id + " to " + myRightNodeId + " right: " + x1 + "," + y1 + ":" + x2 +","+y2);
 						createLine(x1,y1,x2,y2); 
 					}
-
-					
 				});
 			}
 
@@ -463,32 +449,32 @@
 
 					DebugOutput : function() {
 						//debug-ish output
-						var ele = document.getElementById("rawData2"); 
+						var ele = document.getElementById("rawData"); 
 						if (ele) { 
 							ele.innerHTML = sourceData.toString();
 						}
 
 						var tempArr = [];
-						ele = document.getElementById("traverseDepthPre2");
+						ele = document.getElementById("traverseDepthPre");
 						if (ele) {
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "pre");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseDepthIn2");
+						ele = document.getElementById("traverseDepthIn");
 						if (ele) {
 							//also myTree.toArray() or myTree.toString(); 
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseDepthPost2");
+						ele = document.getElementById("traverseDepthPost");
 						if (ele) {
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "post");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseBreadth2");
+						ele = document.getElementById("traverseBreadth");
 						if (ele) {
 							myTree.traverseBreadth(rootNode, function(node) {tempArr.push(node.id)});
 							ele.innerHTML = tempArr.toString(); 
@@ -500,9 +486,9 @@
 						}
 
 						//find a random number
-						//var idToFind = Math.floor(Math.random() * maxNodes); 
-						//console.log("FINDING: " + idToFind);
-						//console.log(myTree.findNode(idToFind)); 
+						var idToFind = Math.floor(Math.random() * maxNodes); 
+						console.log("FINDING: " + idToFind);
+						console.log(myTree.findNode(idToFind)); 
 					}
 				}
 			})(); 
@@ -541,7 +527,7 @@
 
 			$(document).ready(function() { 
 				//HTML output
-				outputHelper.DebugOutput();
+				outputHelper.DebugOutput(); 
 				//Canvas output
 				//myTree.canvasRender(); 
 			})
