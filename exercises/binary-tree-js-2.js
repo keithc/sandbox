@@ -278,7 +278,6 @@
 
 					//use strict here - 0 == "" is true
 					if (myLeftNodeId !== "") {
-						console.log("TOP: " + $item.offset().top + $item.height()); 
 						var $myLeftEle = $("#tree-cell-" + myLeftNodeId);
 						x1 = $item.offset().left; //my left edge x-coord
 						x2 = $myLeftEle.offset().left + ($myLeftEle.outerWidth()/2); //my left child's center x-coord
@@ -449,32 +448,32 @@
 
 					DebugOutput : function() {
 						//debug-ish output
-						var ele = document.getElementById("rawData"); 
+						var ele = document.getElementById("rawData2"); 
 						if (ele) { 
 							ele.innerHTML = sourceData.toString();
 						}
 
 						var tempArr = [];
-						ele = document.getElementById("traverseDepthPre");
+						ele = document.getElementById("traverseDepthPre2");
 						if (ele) {
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "pre");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseDepthIn");
+						ele = document.getElementById("traverseDepthIn2");
 						if (ele) {
 							//also myTree.toArray() or myTree.toString(); 
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseDepthPost");
+						ele = document.getElementById("traverseDepthPost2");
 						if (ele) {
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "post");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseBreadth");
+						ele = document.getElementById("traverseBreadth2");
 						if (ele) {
 							myTree.traverseBreadth(rootNode, function(node) {tempArr.push(node.id)});
 							ele.innerHTML = tempArr.toString(); 
@@ -486,9 +485,9 @@
 						}
 
 						//find a random number
-						var idToFind = Math.floor(Math.random() * maxNodes); 
-						console.log("FINDING: " + idToFind);
-						console.log(myTree.findNode(idToFind)); 
+						//var idToFind = Math.floor(Math.random() * maxNodes); 
+						//console.log("FINDING: " + idToFind);
+						//console.log(myTree.findNode(idToFind)); 
 					}
 				}
 			})(); 
