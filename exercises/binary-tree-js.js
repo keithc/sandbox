@@ -328,10 +328,6 @@
 							myTree.htmlRender(rootNode, ele); 
 						}
 
-						//find a random number
-						var idToFind = Math.floor(Math.random() * maxNodes); 
-						console.log("FINDING: " + idToFind);
-						console.log(myTree.findNode(idToFind)); 
 					}
 				}
 			})();
