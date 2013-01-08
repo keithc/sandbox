@@ -495,15 +495,15 @@
 							ele.innerHTML = tempArr.toString(); 
 						}
 
-						ele = document.getElementById("htmlTree"); 
+						ele = document.getElementById("htmlTree2"); 
 						if (ele) { 
 							myTree.htmlRender(rootNode, ele); 
 						}
 
 						//find a random number
-						var idToFind = Math.floor(Math.random() * maxNodes); 
-						console.log("FINDING: " + idToFind);
-						console.log(myTree.findNode(idToFind)); 
+						//var idToFind = Math.floor(Math.random() * maxNodes); 
+						//console.log("FINDING: " + idToFind);
+						//console.log(myTree.findNode(idToFind)); 
 					}
 				}
 			})(); 
