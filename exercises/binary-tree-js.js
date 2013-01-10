@@ -288,56 +288,57 @@
 
 
 			var outputHelper = (function() { 
-				//TODO: methods
 				return { 
-					console.log("IN IT");
-					//debug-ish output
-					var ele = document.getElementById("rawData"); 
-					if (ele) { 
-						ele.innerHTML = sourceData.toString();
-					}
 
-					var tempArr = [];
-					ele = document.getElementById("traverseDepthPre");
-					if (ele) {
-						myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "pre");
-						ele.innerHTML = tempArr.toString(); 
-					}
-					tempArr=[];
-					ele = document.getElementById("traverseDepthIn");
-					if (ele) {
-						myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
-						ele.innerHTML = tempArr.toString(); 
-					}
-					tempArr=[];
-					ele = document.getElementById("traverseDepthPost");
-					if (ele) {
-						myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "post");
-						ele.innerHTML = tempArr.toString(); 
-					}
-					tempArr=[];
-					ele = document.getElementById("traverseBreadth");
-					if (ele) {
-						myTree.traverseBreadth(rootNode, function(node) {tempArr.push(node.id)});
-						ele.innerHTML = tempArr.toString(); 
-					}
+					DebugOutput : function() {
+						//debug-ish output
+						var ele = document.getElementById("rawData"); 
+						if (ele) { 
+							ele.innerHTML = sourceData.toString();
+						}
 
-					ele = document.getElementById("htmlTree"); 
-					if (ele) { 
-						myTree.htmlRender(rootNode, ele); 
+						var tempArr = [];
+						ele = document.getElementById("traverseDepthPre");
+						if (ele) {
+							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "pre");
+							ele.innerHTML = tempArr.toString(); 
+						}
+						tempArr=[];
+						ele = document.getElementById("traverseDepthIn");
+						if (ele) {
+							//also myTree.toArray() or myTree.toString(); 
+							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
+							ele.innerHTML = tempArr.toString(); 
+						}
+						tempArr=[];
+						ele = document.getElementById("traverseDepthPost");
+						if (ele) {
+							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "post");
+							ele.innerHTML = tempArr.toString(); 
+						}
+						tempArr=[];
+						ele = document.getElementById("traverseBreadth");
+						if (ele) {
+							myTree.traverseBreadth(rootNode, function(node) {tempArr.push(node.id)});
+							ele.innerHTML = tempArr.toString(); 
+						}
+
+						
 					}
 				}
-			}); 
+			})();
 
 			$(document).ready(function() { 
-				outputHelper(); 
+				outputHelper.DebugOutput(); 
 			})
 			//console.log(myTree); 
 
 			var canvasHelper = (function(){ 
 				//init canvas
-				var canvas = document.getElementById('canvas'),
-				context = canvas.getContext('2d'),
+				var canvas = document.getElementById('canvas');
+				if (!canvas) { return false;}
+
+				var context = canvas.getContext('2d'),
 				canvasWidth = parseInt(canvas.getAttribute("width")), 
 				canvasHeight = parseInt(canvas.getAttribute("height")),	 
 				center = canvasWidth/2, 
@@ -362,4 +363,4 @@
 					}
 				}
 			})(); 
-			myTree.canvasRender(); 
+			//myTree.canvasRender(); 

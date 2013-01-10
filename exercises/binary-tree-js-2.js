@@ -1,83 +1,4 @@
-<!doctype html>
-<html>
-	<head>
-		<title>binary search trees</title>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-		<style>
-			body { font-family: sans-serif;}
-			#htmlTree { 
-				width:700px;
-				background:#ECB275;
-				padding: 10px 0; 
-				border: 1px solid #BBB;
-				border-radius:10px;
-			}
-			.tree-row { 
-				list-style-type:none;
-				text-align:center;
-				width:100%;
-				margin:0;
-				padding:0;
-				position:relative; /* so li's can go absolute */
-				height:4em;
-			}
-			.tree-row>li {
-				display:inline-block;
-				border:1px solid #666;
-				height:30px;
-				margin-bottom:10px;
-				padding:.5em;
-				min-width: 35px;
-				
-          		margin-left:40px;
-				background-color: #07077d;
-			 	background-image: -webkit-gradient(linear, left top, left bottom, from(#EEE), to(#CCC)); /* Safari 4+, Chrome */
-				background-image: -webkit-linear-gradient(top, #EEE, #CCC); /* Chrome 10+, Safari 5.1+, iOS 5+ */
-				background-image: -moz-linear-gradient(top, #EEE, #CCC); /* Firefox 3.6-15 */
-				background-image: -o-linear-gradient(top, #EEE, #CCC); /* Opera 11.10-12.00 */
-				background-image: linear-gradient(to bottom, #EEE, #CCC); /* Firefox 16+, IE10, Opera 12.50+ */
-			}
-		
-			.tree-cell-inner { 
-				display: inline-block;
-			}
-			.node-left { 
-				float:left; 
-				font-size:8px;
-				margin: 60% 0 0 0;
-			}
-			.node-right { 
-				float:right; 
-				font-size:8px;
-				margin:60% 0 0 0;
-			}
-			.clear { 
-				clear:both;
-			}
-			canvas { border: 1px solid black;}
-
-			.line { 
-				position:absolute;
-				height:2px;
-				background:#600;
-			}
-		</style>
-	</head>
-	<body>
-		<h2>Binary Search Tree Hootnanny</h2>
-		<p>Tree data: <span id="rawData"></span></p> 
-		<p>Depth traversal, pre-order: <span id="traverseDepthPre"></span></p>
-		<p>Depth traversal, in-order: <span id="traverseDepthIn"></span></p>
-		<p>Depth traversal, post-order: <span id="traverseDepthPost"></span></p>
-		<p>Breadth traversal: <span id="traverseBreadth"></span></p>
-		<p>HTML rendering (uses post-order depth traversal):</p>
-		<div id="htmlTree"></div>
-		<!--<div class="clear"></div>
-		<p>Canvas rendering (uses depth traversal):</p>
-		<canvas id="canvas" height="600" width="900"></canvas>-->
-
-		<script type="text/javascript">
-			//Tree object
+//Tree object
 			//-----------
 			function Tree (rootNode) { 
 				this.rootNode = rootNode; 
@@ -340,10 +261,10 @@
 					line.style.left = x1 - 0.5*length*(1 - Math.cos(angle)) + "px";
 					line.style.MozTransform = line.style.WebkitTransform = line.style.OTransform= "rotate(" + angle + "rad)";
 				}
-				//var firstDiv = document.getElementsByTagName('div')[0];
-				//firstDiv.parentNode.insertBefore(line,firstDiv); 
-				var firstDiv = document.getElementById('htmlTree');
+				var firstDiv = document.getElementsByTagName('div')[0];
 				firstDiv.parentNode.insertBefore(line,firstDiv); 
+				//var firstDiv = document.getElementById('htmlTree');
+				//firstDiv.parentNode.insertBefore(line,firstDiv); 
 			}
 
 
@@ -357,7 +278,6 @@
 
 					//use strict here - 0 == "" is true
 					if (myLeftNodeId !== "") {
-						console.log("TOP: " + $item.offset().top + $item.height()); 
 						var $myLeftEle = $("#tree-cell-" + myLeftNodeId);
 						x1 = $item.offset().left; //my left edge x-coord
 						x2 = $myLeftEle.offset().left + ($myLeftEle.outerWidth()/2); //my left child's center x-coord
@@ -528,32 +448,32 @@
 
 					DebugOutput : function() {
 						//debug-ish output
-						var ele = document.getElementById("rawData"); 
+						var ele = document.getElementById("rawData2"); 
 						if (ele) { 
 							ele.innerHTML = sourceData.toString();
 						}
 
 						var tempArr = [];
-						ele = document.getElementById("traverseDepthPre");
+						ele = document.getElementById("traverseDepthPre2");
 						if (ele) {
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "pre");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseDepthIn");
+						ele = document.getElementById("traverseDepthIn2");
 						if (ele) {
 							//also myTree.toArray() or myTree.toString(); 
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "in");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseDepthPost");
+						ele = document.getElementById("traverseDepthPost2");
 						if (ele) {
 							myTree.traverseDepth(rootNode, function(node) {tempArr.push(node.id)}, "post");
 							ele.innerHTML = tempArr.toString(); 
 						}
 						tempArr=[];
-						ele = document.getElementById("traverseBreadth");
+						ele = document.getElementById("traverseBreadth2");
 						if (ele) {
 							myTree.traverseBreadth(rootNode, function(node) {tempArr.push(node.id)});
 							ele.innerHTML = tempArr.toString(); 
@@ -565,9 +485,9 @@
 						}
 
 						//find a random number
-						var idToFind = Math.floor(Math.random() * maxNodes); 
-						console.log("FINDING: " + idToFind);
-						console.log(myTree.findNode(idToFind)); 
+						//var idToFind = Math.floor(Math.random() * maxNodes); 
+						//console.log("FINDING: " + idToFind);
+						//console.log(myTree.findNode(idToFind)); 
 					}
 				}
 			})(); 
@@ -610,8 +530,3 @@
 				//Canvas output
 				//myTree.canvasRender(); 
 			})
-			
-
-		</script>
-	</body>
-</html>
