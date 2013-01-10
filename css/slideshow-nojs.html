@@ -1,0 +1,86 @@
+<!doctype html>
+<html><head><title>No JS Slideshow</title>
+<style>
+	body { 
+		font-family:arial; 
+	}
+	#slideshow { 
+		width:60%;
+		margin:0px auto;
+		position:relative; /* to anchor the absolutely positioned images*/
+		border:1px solid black;
+		overflow:hidden;
+		height:200px;
+		background:#EEE;
+
+	}
+	ul { 
+		list-style-type:none;
+	}
+	.thumb { 
+		width:15%;
+		height:25px;
+		background:#BBB;
+		float:left;
+		border: 1px solid #900;
+		padding:5px;
+	}
+	.thumb:hover > .big-img { 
+		border:1px solid green;
+		background:#666;
+		visibility:visible;
+		position:absolute;
+		left:50%;
+		top:60px;
+
+	}
+	.big-img { 
+		height:100px;
+		visibility:hidden
+	}
+	
+
+</style>
+</head>
+	<body>
+		todo: use anchors, get elements showing horiz based on that
+	 <section id="slideshow">
+		 <div class="port"> 
+		 	<ul>
+			 	<li class="thumb">
+			 		<span>ImageName1</span>
+			 		<div class="big-img">
+			 			<img src="">123123
+			 		</div>
+			 	</li>
+			 	 <li class="thumb">
+			 	 	<span>ImageName2</span>
+			 		<div class="big-img">
+			 			<img src="">454545
+			 		</div>
+			 	</li>
+			 	 <li class="thumb">
+			 	 	<span>ImageName3</span>
+			 		<div class="big-img">
+			 			<img src="">6777766
+			 		</div>
+			 	</li>
+		 	 	<li class="thumb">
+		 	 		<span>ImageName4</span>
+		 			<div class="big-img">
+		 				<img src="">888888
+		 			</div>
+			 	</li>
+			 	<li class="thumb">
+		 	 		<span>ImageName5</span>
+		 			<div class="big-img">
+		 				<img src="">9999999
+		 			</div>
+			 	</li>
+		 	</ul>
+		 </div>
+	 </section>
+
+
+	</body> 
+</html>		
