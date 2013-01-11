@@ -1,46 +1,49 @@
 body {
 	font-family: Helvetica, Arial;
 	font-size: 1em;
-	background-color: #999;
+	line-height:1;
+	background-color: #e5e5e5;
+	color:#333;
 }
 a { 
 	text-decoration: none;
-	color: #007dba;
+	color: #139;
+}
+a:hover, a:active { 
+	text-decoration: underline;
+}
+p { 
+	line-height:1.4;
 }
 h1 {
-	font-size:1.5em;
+	font-size:1.7em;
+	margin:.8em;
 }
-header h1 { 
-	clear: left;
+h2 { 
+	margin: .5em 0;
 }
+h3 { 
+	margin: .5em 0 .3em 0;
+}
+
 #container { 
-	background-color:#BBB;
+	background-color:transparent;
 	max-width:1400px;
 	margin:0 auto;
 	padding:0;
 }
-/*#left-column, #center-column, #right-column { 
-	display: inline-block;
-	vertical-align: top; 
-}*/
-#left-column { 
-	float:left;
-	width:15%;
-	background-color:#ccc;
+/* header/navigation*/
+header h1 { 
+	clear: left;
 }
-#center-column { 
-	float:left;
-	width:65%;
-	background-color:#fff;
-}
-#right-column {
-	float:right;
-	width:15%;
-	border: 1px dashed black;
+article { 
+	padding: 1em 2em;
 }
 nav { 
 	margin: 0 auto;
+	overflow:hidden;
 }
+
 nav li { 
 	list-style: none;
 	float:left;
@@ -50,7 +53,7 @@ nav li {
 }
 nav li a { 
 	padding: 1em;
-	line-height:1em;
+	line-height:1;
 	display:block;
 }
 nav li:first-child {
@@ -61,13 +64,53 @@ nav li:last-child {
 	border-top-right-radius: .3em;
 	border-bottom-right-radius: .3em;
 }
+/*content columns*/
+#left-column, #center-column, #right-column { 
+/*	display: inline-block;
+	vertical-align: top; */
+	margin-top:1.5em;
+	margin-left:2%;
+	margin-bottom:2em;
+	border-radius:1em;
+}
+#content-wrapper { 
+	overflow:hidden;
+	background-color:#ccc;
+	border-radius:1em;
+}
+#left-column { 
+	float:left;
+	width:13%;
+	background-color:#ddd;
+	padding:1em;
+	box-shadow: 0 0 6px #444
+}
+#left-column ul { 
+	margin-bottom:1.5em;
+}
+#left-column li { 
+	list-style:none;
+	margin:0 .3em .3em .3em;
+}
+#center-column { 
+	float:left;
+	width:60%;
+	background-color:#fff;
+	box-shadow: 0 0 3px #444
+}
+#right-column {
+	float:right;
+	width:15%;
+	margin-right:1.4em;
+}
 #right-column > .bubble { 
 	padding: 1em;
-	margin: 1em;
+	margin: .3em .3em .6em .3em;
 	background-color:#400;
 	color:#fff;
 	border-radius: 1em;
 }
+
 .clear { 
 	clear:both;
 }
