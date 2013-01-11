@@ -41,26 +41,44 @@ article {
 }
 nav { 
 	margin: 0 auto;
-	overflow:hidden;
+	/*overflow:hidden;*/ /*can't use this because of the child menus*/
 }
 
-nav li { 
+#top-menu li { 
 	list-style: none;
 	float:left;
 	margin:0;
-	border: 1px solid black;
+	border: 1px solid #ccc;
 	background:#FFF;
+	position:relative;
 }
-nav li a { 
-	padding: 1em;
+#top-menu li a { 
+	padding: .7em 1em;
 	line-height:1;
 	display:block;
 }
-nav li:first-child {
+#top-menu li li a { 
+	width:150px;
+}
+#top-menu li li a:hover { 
+	color:#fff;
+	background-color:#400;
+}
+#top-menu ul { 
+	visibility: hidden;
+	position:absolute;
+}
+#top-menu li:hover > ul { 
+	visibility: visible;
+	top: auto;
+	left:auto;
+}
+
+#top-menu>li:first-child {
 	border-top-left-radius: .3em;
 	border-bottom-left-radius: .3em;
 }
-nav li:last-child {
+#top-menu>li:last-child {
 	border-top-right-radius: .3em;
 	border-bottom-right-radius: .3em;
 }
@@ -114,3 +132,81 @@ nav li:last-child {
 .clear { 
 	clear:both;
 }
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+.cf:after {
+    clear: both;
+}
+/**
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.cf {
+    *zoom: 1;
+}
+
+/*media queries*/
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) {
+/* Styles */
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen 
+and (min-width : 321px) {
+/* Styles */
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen 
+and (max-width : 320px) {
+/* Styles */
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) {
+/* Styles */
+}
+
+/* iPads (landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) {
+/* Styles */
+}
+
+/* iPads (portrait) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) {
+/* Styles */
+}
+
+/* Desktops and laptops ----------- */
+@media only screen 
+and (min-width : 1224px) {
+/* Styles */
+}
+
+/* Large screens ----------- */
+@media only screen 
+and (min-width : 1824px) {
+/* Styles */
+}
+
+/* iPhone 4 ----------- */
+@media
+only screen and (-webkit-min-device-pixel-ratio : 1.5),
+only screen and (min-device-pixel-ratio : 1.5) {
+/* Styles */
+}
+
