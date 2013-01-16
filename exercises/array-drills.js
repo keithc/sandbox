@@ -15,30 +15,41 @@ Array.prototype.shuffle = function () {
 
 //given a target x and an array, find any pairs of elements whose sum is x
 var x = 18; 
-var arr = [1,2,3,5,6,7,8,10,11,12,13,14,16,17,22]; 
+var arr = []; //[1,2,3,5,6,7,8,10,11,12,13,14,16,17,22]; 
+for (var i=0; i<1000; i++) { 
+	arr.push(i); 
+}
 arr.shuffle(); 
 
 //direct find
-var arr2 = arr.slice(0,arr.length); 
+var arr2 = arr.slice(0,arr.length),
+    count = 0; 
 for (var i=0; i<arr.length; i++) { 
-   var target = Math.abs(x-arr[i]); 
+   var target = x-arr[i]; 
+   if (target < 0) { continue; }
    if (arr2.indexOf(target) != -1) {
-		console.log ( "::" + arr[i] + " plus " + target  + " = " + x); 
-	    continue; 
-	} 
+            count++;
+             console.log ( "T1: " + arr[i] + " plus " + target + " = " + x); 
+            continue; 
+        } 
 }
+console.log("test1: " + count); 
 
 //semi-fake associative array
-var arrObj = {}; 
+var arrObj = {}, 
+    count=0; 
 for (var i=0; i<arr.length; i++) { 
-	arrObj[arr[i]]=arr[i]; 
+        arrObj[arr[i]]=arr[i]; 
 }
 for (var i=0; i<arr.length; i++) { 
-	var target = Math.abs(x-arr[i]); 
-	if (arrObj[target]) { 
-		console.log ( " ** " + arr[i] + " plus " + target  + " = " + x); 
-	    continue; 
-	}
+        var target = x-arr[i]; 
+        if (target < 0) { continue; }
+        if (arrObj[target]) { 
+            count++;
+             console.log ( "T2: " + arr[i] + " plus " + target  + " = " + x); 
+            continue; 
+        }
 }
+console.log("test2: " + count); 
 
-//jsperf says the indexOf wins when the count gets decent: http://jsperf.com/finding-numbers-array-search-vs-associative-object
+//jsperf says the object easily wins when the count gets decent: http://jsperf.com/finding-numbers-array-search-vs-associative-object
