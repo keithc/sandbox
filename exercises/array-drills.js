@@ -13,6 +13,51 @@ Array.prototype.shuffle = function () {
 		}
 };
 
+//given an array of numbers, find the equilibrium index i where the numbers preceding a[i] and the numbers following it
+// have equal sums: a[0] + ... + a[i-1] = a[i+1] + a[i+2] + a[n-1]  where a has n elements
+function findEquilibriumSlower(arr) { 
+    //mildly offensive: two running sums, O(n^2)
+    //get sum of elements before me and after me
+    var sumUp, sumDown; 
+    for (var i=0, len = arr.length; i < len; i++) { 
+        sumUp =0;
+        sumDown=0; 
+        for (j=0; j<i; j++) { 
+            sumUp += arr[j];
+        }
+        for (k=(arr.length-1); k>i; k--) { 
+            sumDown += arr[k]; 
+        }
+        if (sumUp === sumDown) { 
+            return i; 
+        }    
+    }
+}
+
+//a bit better: make one pass and compute the total sum
+//then, iterate through, subtracting arr[i] from the sum until hitting an equal
+//should be O(2n)
+function findEquilibriumFaster(arr) { 
+    var totalSum, sumUp=0; 
+    //execute once for each element, execute the callback, passing the previous callback's value and the current element
+    totalSum = arr.reduce(function (prev, cur) { return prev + cur })
+    //execute once for each element
+    for (var i=0; i<arr.length; i++) { 
+        totalSum -= arr[i];
+        if (sumUp === totalSum) { 
+            return i;
+        }
+        sumUp += arr[i];
+    }
+    return undefined; 
+}
+
+var eqMe = [3,5,8,11,14,22,7,8,9,2,12,6,20,9,1,13,10,4,1,0];
+//eqMe = [3,5,8,7,4,12,0];
+console.log("EQ: " + findEquilibriumSlower(eqMe)); 
+console.log("EQ2: " + findEquilibriumFaster(eqMe)); 
+//http://jsperf.com/equilibrium-index
+
 //given a target x and an array, find any pairs of elements whose sum is x
 var x = 18; 
 var arr = []; //[1,2,3,5,6,7,8,10,11,12,13,14,16,17,22]; 
