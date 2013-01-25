@@ -10,11 +10,7 @@
 				background:#999;
 				clear: both;
 			}
-		/*	#container { 
-				width: 90%; 
-				margin: 0 auto;
-				background-color: #EEE;
-			}*/
+			/* float solution */
 			#container { 
 				background-color:#ccc;
 				padding-left:200px;
@@ -42,15 +38,48 @@
 				margin-right: -100%;
 				background-color: #99E;
 			}
+			/* absolutely positioned solution */
+			#container-abs { 
+				position:relative; /* to anchor the absolutes inside */ 
+			}
+			#left-col-abs { 
+				position:absolute;
+				left:0;
+				width:200px;
+				background-color: #E99;
+			}
+			#center-col-abs { 
+				margin:0 200px 0 150px;
+				width:100%;
+				background-color: #9E9;
+			}
+			#right-col-abs { 
+				position:absolute;
+				right:0;
+				background-color: #99E;
+				width:150px;
+			}
 			
+
 		</style>
 	</head>
 	<body>
+		<h2>float</h2>
 		<header>This is the header</header>
 		<div id="container">
 			<div class="column" id="center-col">Center Column Here.<p>I'm 100% wide.</p></div> 
-			<div class="column" id="left-col">Left Column Here.<p>I'm 200px wide.</p><p>My right edge is moved 200px (to the left).</p><p>I'm also margin'd over -100%.</p></div> 
-			<div class="column" id="right-col">Right Column Here.<p>I'm 150px wide. I'm margin'd over 100% (margin-right: -100%)</div> 
+			<div class="column" id="left-col">Left Column Here.<p>I'm 200px wide.</p><p>I'm right:200px, so my right edge is moved 200px (to the left).</p><p>My margin-left is -100%.</p></div> 
+			<div class="column" id="right-col">Right Column Here.<p>I'm 150px wide.</p></p>My margin-right is -100%.</p></div> 
+		</div>
+		<footer>This is the footer</footer>
+		<p></p>
+
+		<h2>absolute</h2>
+		<header>This is the header</header>
+		<div id="container-abs">
+			<div class="column" id="left-col-abs">Left Column Here.<p>I'm 200px wide.</p><p>I'm left:0 and absolutely positioned.</p></div> 
+			<div class="column" id="center-col-abs">Center Column Here.<p>I'm 100% wide and not positioned.</p></div> 
+			<div class="column" id="right-col-abs">Right Column Here.<p>I'm 150px wide.</p></p>I'm right:0 and absolutely positioned.</p></div> 
 		</div>
 		<footer>This is the footer</footer>
 	</body>
