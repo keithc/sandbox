@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+	<head>
+		<style> 
+			body { 
+				font-family: arial;
+				min-width:550px;
+			}
+			header, footer{ 
+				background:#999;
+				clear: both;
+			}
+		/*	#container { 
+				width: 90%; 
+				margin: 0 auto;
+				background-color: #EEE;
+			}*/
+			#container { 
+				background-color:#ccc;
+				padding-left:200px;
+				padding-right:150px;
+				overflow:hidden;
+			}
+			.column { 
+				/*display:inline-block;
+				vertical-align:top*/
+				float:left;
+				position:relative;
+			}
+			#left-col { 
+				width: 200px; 
+				right: 200px;
+				margin-left: -100%;
+				background-color: #E99;
+			}
+			#center-col { 
+				width:100%;
+				background-color: #9E9;
+			}
+			#right-col { 
+				width: 150px;
+				margin-right: -100%;
+				background-color: #99E;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<header>This is the header</header>
+		<div id="container">
+			<div class="column" id="center-col">Center Column Here.<p>I'm 100% wide.</p></div> 
+			<div class="column" id="left-col">Left Column Here.<p>I'm 200px wide.</p><p>My right edge is moved 200px (to the left).</p><p>I'm also margin'd over -100%.</p></div> 
+			<div class="column" id="right-col">Right Column Here.<p>I'm 150px wide. I'm margin'd over 100% (margin-right: -100%)</div> 
+		</div>
+		<footer>This is the footer</footer>
+	</body>
+</html>
