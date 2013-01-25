@@ -1,0 +1,212 @@
+body {
+	font-family: Helvetica, Arial;
+	font-size: 1em;
+	line-height:1;
+	background-color: #e5e5e5;
+	color:#333;
+}
+a { 
+	text-decoration: none;
+	color: #139;
+}
+a:hover, a:active { 
+	text-decoration: underline;
+}
+p { 
+	line-height:1.4;
+}
+h1 {
+	font-size:1.7em;
+	margin:.8em;
+}
+h2 { 
+	margin: .5em 0;
+}
+h3 { 
+	margin: .5em 0 .3em 0;
+}
+
+#container { 
+	background-color:transparent;
+	max-width:1400px;
+	margin:0 auto;
+	padding:0;
+}
+/* header/navigation*/
+header h1 { 
+	clear: left;
+}
+article { 
+	padding: 1em 2em;
+}
+nav { 
+	margin: 0 auto;
+	/*overflow:hidden;*/ /*can't use this because of the child menus*/
+}
+
+#top-menu li { 
+	list-style: none;
+	float:left;
+	margin:0;
+	border: 1px solid #ccc;
+	background:#FFF;
+	position:relative;
+}
+#top-menu li a { 
+	padding: .7em 1em;
+	line-height:1;
+	display:block;
+}
+#top-menu li li a { 
+	width:150px;
+}
+#top-menu li li a:hover { 
+	color:#fff;
+	background-color:#400;
+}
+#top-menu ul { 
+	visibility: hidden;
+	position:absolute;
+}
+#top-menu li:hover > ul { 
+	visibility: visible;
+	top: auto;
+	left:auto;
+}
+
+#top-menu>li:first-child {
+	border-top-left-radius: .3em;
+	border-bottom-left-radius: .3em;
+}
+#top-menu>li:last-child {
+	border-top-right-radius: .3em;
+	border-bottom-right-radius: .3em;
+}
+/*content columns*/
+#left-column, #center-column, #right-column { 
+/*	display: inline-block;
+	vertical-align: top; */
+	margin-top:1.5em;
+	margin-left:2%;
+	margin-bottom:2em;
+	border-radius:1em;
+}
+#content-wrapper { 
+	overflow:hidden;
+	background-color:#ccc;
+	border-radius:1em;
+}
+#left-column { 
+	float:left;
+	width:13%;
+	background-color:#ddd;
+	padding:1em;
+	box-shadow: 0 0 6px #444
+}
+#left-column ul { 
+	margin-bottom:1.5em;
+}
+#left-column li { 
+	list-style:none;
+	margin:0 .3em .3em .3em;
+}
+#center-column { 
+	float:left;
+	width:60%;
+	background-color:#fff;
+	box-shadow: 0 0 3px #444
+}
+#right-column {
+	float:right;
+	width:15%;
+	margin-right:1.4em;
+}
+#right-column > .bubble { 
+	padding: 1em;
+	margin: .3em .3em .6em .3em;
+	background-color:#400;
+	color:#fff;
+	border-radius: 1em;
+}
+
+.clear { 
+	clear:both;
+}
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+.cf:after {
+    clear: both;
+}
+/**
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.cf {
+    *zoom: 1;
+}
+
+/*media queries*/
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) {
+/* Styles */
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen 
+and (min-width : 321px) {
+/* Styles */
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen 
+and (max-width : 320px) {
+/* Styles */
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) {
+/* Styles */
+}
+
+/* iPads (landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) {
+/* Styles */
+}
+
+/* iPads (portrait) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) {
+/* Styles */
+}
+
+/* Desktops and laptops ----------- */
+@media only screen 
+and (min-width : 1224px) {
+/* Styles */
+}
+
+/* Large screens ----------- */
+@media only screen 
+and (min-width : 1824px) {
+/* Styles */
+}
+
+/* iPhone 4 ----------- */
+@media
+only screen and (-webkit-min-device-pixel-ratio : 1.5),
+only screen and (min-device-pixel-ratio : 1.5) {
+/* Styles */
+}
+

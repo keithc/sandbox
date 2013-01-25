@@ -1,0 +1,181 @@
+<!doctype html>
+<html><head><title>No JS Slideshow</title>
+<style>
+	body { 
+		font-family: Helvetica, Arial;
+		font-size:1em;
+		line-height:1.25em;
+	}
+	#slideshow { 
+		width:800px;
+		position:relative; /* to anchor the absolutely positioned images*/
+		border:1px solid black;
+		overflow:hidden;
+		height:550px;
+		background:#EEE;
+	}
+	ul { 
+		list-style-type:none;
+	}
+	a, span { 
+		font-weight:bold;
+		color:#000;
+		text-decoration:none;
+		line-height:1em;
+	}
+	.thumb { 
+		width:15%;
+		height:1.5em;
+		background:#fff;
+		float:left;
+		border-top: 3px solid #ccc;
+		border-right: 3px solid #ccc;
+		border-bottom: 3px solid #aaa;
+		border-left: 3px solid #ccc;
+		padding:.6em;
+		color:#000;
+		text-align:center;
+	}
+	.thumb:hover { 
+		border-top: 3px solid #aaa;
+		border-bottom: 3px solid #ccc;
+		background-color: #ddd;
+	}
+	.thumb:first-child { 
+		border-top-left-radius: 5px;
+		border-bottom-left-radius: 5px;
+	}
+	.thumb:last-child { 
+		border-top-right-radius: 5px; 
+		border-bottom-right-radius: 5px;
+	}
+	.canhover.thumb:hover > .big-img
+	/* .thumb > a:active ~ .big-img  */
+	{
+		background:#666;
+		visibility:visible;
+		position:absolute;
+		left:0;
+		right:0;
+		top:110px;
+	}
+	.thumb > a:active { 
+		background:#FFF;
+	}
+	.big-img { 
+		width:100%;
+		visibility:hidden
+	}
+	
+	/*overrides for the port-hole approach, using anchors*/
+	.port .image-container { 
+		overflow:hidden;
+		width:800px;
+	}
+	.port .sliding-images { 
+		width: 4000px; /*  800*5  */
+	}
+	.port .sliding-images li{ 
+		float: left;
+		width:800px;
+	}
+	.port img { 
+		margin:0 133px ;
+	}
+	.port .big-img { 
+		visibility: visible;
+	}
+	.clear { clear:both;}
+
+</style>
+</head>
+	<body>
+	<h3>Uses an overflow:hidden port and anchors (with unfortunate top behavior due to no js) to slide the correct image into view</h3>
+	 <section id="slideshow" class="port"> 
+	 	<div class="image-container">
+		 	<ul class="sliding-images"> 
+		 		<li> 
+		 			<div id="image1" class="big-img">
+			 			<img alt="Reid Glacier" width="534"  height="400" src="https://lh5.googleusercontent.com/-P0GZewjeIBM/SoHrKkFKUHI/AAAAAAAAAJg/WWvKOLSKzwQ/s1055/alaska+2009+367.JPG">
+			 		</div>
+			 	</li>
+			 	<li>
+			 		<div id="image2" class="big-img">
+			 			<img alt="Salmon" width="534"  height="400" src="https://lh5.googleusercontent.com/-YDmCNFSWe0Y/SoHmQw7fQ-I/AAAAAAAAAHw/bwWWKePvXdg/s1055/alaska+2009+180.JPG">
+			 		</div>
+			 	</li>
+			 	<li>
+			 		<div id="image3"  class="big-img">
+			 			<img alt="Ice" width="534"  height="400" src="https://lh6.googleusercontent.com/-0SbEDsaJyOk/SoHSO-MWaXI/AAAAAAAAACg/RhX9hIEvWTU/s1055/alaska+2009+421.JPG">
+			 		</div>
+			 	</li>
+		 	 	<li>
+		 			<div  id="image4" class="big-img">
+		 				<img alt="Waterfall" width="534" height="400" src="https://lh3.googleusercontent.com/-a4_cpiUp9Dc/SoJaQqfpjpI/AAAAAAAAANI/7pqrjcqDd94/s1055/alaska+2009+499.JPG">
+		 			</div>
+			 	</li>
+			 	<li>
+		 			<div id="image5" class="big-img">
+		 				<img alt="Glacier" width="534"  height="400" src="https://lh5.googleusercontent.com/-g42fNQoJGe8/SoHZXczh9EI/AAAAAAAAAD0/xI-DDZwkkJM/s1055/alaska+2009+566.JPG">
+		 			</div>
+			 	</li>
+		 	</ul>
+	 	</div>
+	 	<ul class="nav">
+			 	<li class="thumb">
+			 		<a href="#image1">Reid Glacier</a>
+			 	</li>
+			 	 <li class="thumb">
+			 	 	<a href="#image2">Salmon</a>
+			 	</li>
+			 	 <li class="thumb">
+			 	 	<a href="#image3">Ice</a>
+			 	</li>
+		 	 	<li class="thumb">
+		 	 		<a href="#image4">Waterfall</a>
+			 	</li>
+			 	<li class="thumb">
+		 	 		<a href="#image5">Glacier</a>
+			 	</li>
+	 		</ul>
+	 </section>
+
+	 <h3>Uses :hover > img to show the otherwise invisible images</h3>
+	 <section id="slideshow">
+	 	<ul>
+		 	<li class="thumb canhover">
+		 		<span>Reid Glacier</span>
+		 		<div class="big-img">
+		 			<img alt="Reid Glacier" height="400" src="https://lh5.googleusercontent.com/-P0GZewjeIBM/SoHrKkFKUHI/AAAAAAAAAJg/WWvKOLSKzwQ/s1055/alaska+2009+367.JPG">
+		 		</div>
+		 	</li>
+		 	 <li class="thumb canhover">
+		 	 	<span>Salmon</span>
+		 		<div class="big-img">
+		 			<img alt="Salmon" height="400" src="https://lh5.googleusercontent.com/-YDmCNFSWe0Y/SoHmQw7fQ-I/AAAAAAAAAHw/bwWWKePvXdg/s1055/alaska+2009+180.JPG">
+		 		</div>
+		 	</li>
+		 	 <li class="thumb canhover">
+		 	 	<span>Ice</span>
+		 		<div class="big-img">
+		 			<img alt="Ice" height="400" src="https://lh6.googleusercontent.com/-0SbEDsaJyOk/SoHSO-MWaXI/AAAAAAAAACg/RhX9hIEvWTU/s1055/alaska+2009+421.JPG">
+		 		</div>
+		 	</li>
+	 	 	<li class="thumb canhover">
+	 	 		<span>Waterfall</span>
+	 			<div class="big-img">
+	 				<img alt="Waterfall" height="400" src="https://lh3.googleusercontent.com/-a4_cpiUp9Dc/SoJaQqfpjpI/AAAAAAAAANI/7pqrjcqDd94/s1055/alaska+2009+499.JPG">
+	 			</div>
+		 	</li>
+		 	<li class="thumb canhover">
+	 	 		<span>Glacier</span>
+	 			<div class="big-img">
+	 				<img alt="Glacier" height="400" src="https://lh5.googleusercontent.com/-g42fNQoJGe8/SoHZXczh9EI/AAAAAAAAAD0/xI-DDZwkkJM/s1055/alaska+2009+566.JPG">
+	 			</div>
+		 	</li>
+	 	</ul>
+	 </section>
+
+	
+	</body> 
+</html>		

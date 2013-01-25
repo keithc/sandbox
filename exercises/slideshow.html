@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+	<head>
+		<title>tabs</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<style>
+			body { 
+				font-family:helvetica;
+				font-size:1em;
+			}
+			html { 
+				font-size:100%; /*ie*/
+			}
+			ul { 
+				list-style-type: none;
+			}
+			#image-showcase li { 
+				display:none;
+			}
+
+		</style>
+	</head>
+	<body>
+		<section id="thumbnails">
+			<ul> 
+				<li><a href="#image1" data-mytarget="01">image1</a></li>
+				<li><a href="#image2" data-mytarget="02">image2</a></li>
+			</ul> 
+		</section>
+		<section id="image-showcase">
+			<ul>
+				<li id="image1">this is image 1</li>
+				<li id="image2">this is image 2</li>
+			</ul>
+		</section> 
+		<script type="text/javascript">
+			$(document).ready(function() { 
+				$("body").on("click", "#thumbnails li", function(evt) { 
+					evt.preventDefault();
+					var $anchor, myTargetId, $target;
+					$anchor = $(this).find("a").first(); 
+					myTargetId = $anchor.attr("href");
+					$target = $(myTargetId); 
+					console.log($anchor.data("mytarget"));
+					$("#image-showcase li").hide(); 
+					$target.show(); 
+				})
+			});
+
+		</script>
+	</body>
+</html>
