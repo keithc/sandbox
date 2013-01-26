@@ -41,6 +41,8 @@
 			/* absolutely positioned solution */
 			#container-abs { 
 				position:relative; /* to anchor the absolutes inside */ 
+				padding: 0 150px 0 200px;
+				background-color:#ccc;
 			}
 			#left-col-abs { 
 				position:absolute;
@@ -49,7 +51,7 @@
 				background-color: #E99;
 			}
 			#center-col-abs { 
-				margin:0 200px 0 150px;
+				
 				width:100%;
 				background-color: #9E9;
 			}
@@ -59,12 +61,11 @@
 				background-color: #99E;
 				width:150px;
 			}
-			
-
 		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 	</head>
 	<body>
-		<h2>float</h2>
+		<h2>floated</h2>
 		<header>This is the header</header>
 		<div id="container">
 			<div class="column" id="center-col">Center Column Here.<p>I'm 100% wide.</p></div> 
@@ -72,9 +73,9 @@
 			<div class="column" id="right-col">Right Column Here.<p>I'm 150px wide.</p></p>My margin-right is -100%.</p></div> 
 		</div>
 		<footer>This is the footer</footer>
-		<p></p>
+		<br>
 
-		<h2>absolute</h2>
+		<h2>absolutely positioned, container padding, js for container height</h2>
 		<header>This is the header</header>
 		<div id="container-abs">
 			<div class="column" id="left-col-abs">Left Column Here.<p>I'm 200px wide.</p><p>I'm left:0 and absolutely positioned.</p></div> 
@@ -82,5 +83,17 @@
 			<div class="column" id="right-col-abs">Right Column Here.<p>I'm 150px wide.</p></p>I'm right:0 and absolutely positioned.</p></div> 
 		</div>
 		<footer>This is the footer</footer>
+		<script type="text/javascript">
+		$(document).ready(function() { 
+			var newHeight = 0, $container; 
+			$container = $("#container-abs");
+			$container.children().each(function(index,item) { 
+				var $item = $(item); 
+				newHeight = newHeight > $item.height() ? newHeight : $item.height(); 
+			});
+			$container.height(newHeight); 
+			 
+		})
+		</script> 
 	</body>
 </html>
