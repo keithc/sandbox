@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+	</head>
+	<body>
+		<form id="zipLookup">
+			<input type="text" name="postalcode" id="postalcode" placeholder="zip here" value="78729">
+			<button id="submit">Submit</button>
+		</form>
+		<p>Raw Data: <span id="raw"></span></p>
+		<p>Stringify: <span id="stringified"></span></p>
+		<p>Place Name: <span id="myData"></span></p>
+		<script type="text/javascript">
+		$(document).ready(function() { 
+			(function doJsonP($) { 
+				var methods, privates, url, _o; 
+
+				this.privates = { 
+					privateMethod: function(myString) { console.log("I'm private. " + myString);}
+				};
+				//called via $.fn.pluginName("methodName")
+				methods = { 
+					init: function(options) { 
+						_o = $.extend($.fn.doJsonP.defaults, options);
+						//bind to button
+						$("body").on("click","#submit", function(evt) { 
+							evt.preventDefault(); 
+							methods.execJsonP($("#zip").val()); 
+						})
+					},
+					destroy: function() { 
+
+					},
+					execJsonP: function(val, callback) { 
+						//var url = _o.url.replace(/\{0\}/, val); 
+						//if (!url) { url = _o.url };
+						$.ajax({
+							url: _o.url, 
+							data: $("#zipLookup").serialize(),
+							dataType: "json", 
+							cache: true, 
+							success: function(data) { 
+								$("#raw").text(data); 
+								$("#stringified").text(JSON.stringify(data));
+								$("#myData").html("");
+								$(data).each(function(index, item) { 
+									//generic
+									//$("<p>", { text: JSON.stringify(item)}).appendTo("#myData");
+									//properties
+									$("<span>", { text: item.postalcodes[0].placeName}).appendTo("#myData");
+								})
+							},
+							error: function(error) { console.log(error) },
+							complete: function() { }
+
+						})
+
+					}
+				};
+				//declare plugin
+				$.fn.doJsonP = function(options) { 
+					if (methods[options]) { 
+						return methods[options].apply(this, Array.prototype.slice.call(arguments,1));
+					} else { 
+						if (typeof options==="object" || !options) { 
+							return methods.init.apply(this, arguments);
+						} else { 
+							console.log("method " + options + " does not exist on doJsonP");
+						}
+					}
+				}
+				$.fn.doJsonP.defaults = {url: "http://www.geonames.org/postalCodeLookupJSON?country=US&callback=?"};
+			})(jQuery);
+
+			//exec
+			$.fn.doJsonP(""); 
+
+		})
+		</script>
+	</body>
+</html>

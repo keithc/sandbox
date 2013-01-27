@@ -16,4 +16,5 @@ function myFunc(myParam) {
 
   console.log("public member: " + mf.myPublicMember); 
   console.log(mf.privilegedFunc("2nd"));
+  console.log(mf.publicMethod("3rd"));
 

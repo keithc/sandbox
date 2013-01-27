@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>popups</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<style> 
+			.tooltipBody { 
+				position:absolute;
+				border: 2px dotted blue;
+				display:none;
+				background:#ccc;
+				width:150px;
+			}
+			.tooltip { 
+				border: 1px solid black;
+				width:25%;
+				position:relative;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="tooltip" id="first">Hover over me</div>
+		<div class="tooltipBody" id="tooltipBody"></div>
+		<p></p><p></p>
+		<div class="tooltip" id="second">Hover over me</div>
+		<script type="text/javascript">
+			$(document).ready(function() { 
+				var myTooltips = {};
+				myTooltips["first"] = "This is the tooltip body for the id 'first'.";
+				myTooltips["second"] = "This is the tooltip for the SECOND id.";
+				$("body").on("mouseenter mouseleave",".tooltip",function(event) {   //or "hover", but deprecated in 1.8
+					var myId, myContent; 
+					myId = this.id, 
+					$this = $(this); 
+
+					if (myId) {
+						myContent = myTooltips[myId];
+						if (event.type === "mouseenter") { 
+							var myLeft =  $this.outerWidth(); 
+							$("#tooltipBody").html(myContent).appendTo($this).offset({left:myLeft}).show(); 
+						}
+						if (event.type === "mouseleave") { 
+							$("#tooltipBody").hide();  //.detach takes it out of the dom, .empty takes the element out of the dom and removes children, .remove kills the element and all data/bindings
+						}
+						//$("#tooltipBody").html(myContent).toggle(event.type ==="mouseenter");
+					}
+				});
+			});
+
+		</script>
+
+	</body>
+</html>
