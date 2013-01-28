@@ -31,30 +31,45 @@
 				background:black; 
 			}
 			/* controls */
-						
+			.infoListTab { 
+				position:absolute; 
+				float:right;
+				right:90px;
+				top: 285px; 
+				border:2px solid red; 
+			}
+			
+			.infoWrapper { 
+				float:right; 
+				height: auto; 
+				border: 2px solid red; 
+				position:absolute; 
+				top: 230px; 
+				right: 20px; 
+			}
 			.infoBox { 
 				color:black; 
 				font-size:10px; 
 				line-height:40px; 
 				padding:0 10px 0 10px; 
 				border-right: 1px solid grey; 
-				min-width:100px; 
 				display:inline-block; 
 				float:left; 
 			}
 			.infoList {
-				max-height:40px; 
-				overflow:hidden; 
-				float:right; 
+				#max-height:40px; 
+				#overflow:hidden; 
+				#float:right; 
 			}
 			.infoList ul { 
 				height:120px; 
 				margin:0px; 
-				position:absolute; 
+				#position:absolute; 
 				background:white; 
-				top:230px; 
-				right:20px; 
+				#top:230px; 
+				#right:20px; 
 				padding: 0 5px 0 5px; 
+				border: 2px #036 solid; 
 				
 			}
 			.infoList li { 
@@ -111,7 +126,8 @@
 			}
 			
 			div.hud { 
-				display:inline-block; 
+				#display:inline-block; 
+				margin-left:20px; 
 				vertical-align:top; 
 				width:45%; 
 			}
@@ -122,6 +138,8 @@
 				height:100%; 
 				margin-bottom:20px; 
 				padding-bottom:10px; 
+				width:70%; 
+				margin:auto; 
 			}
 			
 			div#controls { 
@@ -151,6 +169,21 @@
 			div.clear { 
 				clear: both; 
 			}
+			/* For modern browsers */
+			.cf:before,
+			.cf:after {
+				content:"";
+				display:table;
+			}
+
+			.cf:after {
+				clear:both;
+			}
+
+			/* For IE 6/7 (trigger hasLayout) */
+			.cf {
+				*zoom:1;
+			}
 		</style> 
 	</head>
 <body>
@@ -165,10 +198,12 @@
 
 	<canvas id="canvas" width="500" height="300"></canvas> 
 	<div id="mainContainer">
+		
 		<div id="controls">
 			<div class="infoBox"><a class="plainButton" href="#" data-bind="click:toggleTimer, css: {running: timer().running }"><span data-bind="text: startButtonText"></span></a></div>
 			<div class="infoBox">Total passengers delivered: <span data-bind="">zzz</span></div>
-			<div class="infoBox infoList"> <ul id="ticker" data-bind="foreach: mostRecentEvents"><li><span data-bind="text:msg"></span>-<span data-bind="text: timestamp"></span></li></ul></div>
+			<p class="infoListTab"><a href="#" class="btn-slide">View Log</a></p>
+			<div class="infoWrapper"><div class="infoBox infoList"> <ul id="ticker" data-bind="foreach: mostRecentEvents, visible: mostRecentEvents().length > 0"><li><span data-bind="text:msg"></span>-<span data-bind="text: timestamp"></span></li></ul></div></div>
 					
 		</div> 	
 		<div id="statusContainer"></div> 
@@ -805,7 +840,12 @@
 			$('ul#ticker li:first').slideDown('slow'); 
 			
 		}
-		
+		$("#mainContainer").on("click",".infoListTab", function() { 
+				$(".infoWrapper").slideToggle("slow"); 
+				$(this).toggleClass("active"); 
+				return false; 
+			}
+		)
 	
 	});
 	</script> 
