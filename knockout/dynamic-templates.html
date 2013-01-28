@@ -26,7 +26,8 @@
 				self.template = ko.observable("default");
 				self.myData = ko.observableArray();
 				self.templateColumns = ko.computed(function() { 
-					//get the first item in the array, build a list of its object properties to serve as columns //TODO: a way to cache this, maybe an array of [menuItem (key), cachedData (value)]
+					//get the first item in the array, build a list of its object properties to serve as columns 
+					//TODO: a way to cache this, maybe an array of [menuItem (key), cachedData (value)]
 					if ((self.myData() != null) && (self.myData()[0] != undefined)) 
 					{
 						var obj = self.myData()[0]; 
