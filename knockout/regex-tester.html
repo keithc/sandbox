@@ -1,88 +1,139 @@
 <html>
 	<head>
 		<title>Knockout Regex Tester</title>
-		<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.1.0/knockout-min.js"></script> 
-		
+		<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.1.0.js"></script> 
 		<style>
 			body { font-family: helvetica, arial; font-size: 1em; } 
-			input, textarea { width:300px; font-family: inherit; font-size: inherit; margin-bottom:25px;} 
+			#pattern, textarea { display:block; font-family: inherit; font-size: inherit; width: 300px; margin-bottom:25px;} 
 			textarea { height: 100px }
-			label { display:block}
-			.highlight { color:#060; background-color:#C5F7C5; } 
-			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; border: solid 1px #CCC; font-weight:bold;}
+			label { display:block; font-weight:bold;}
+			.options label { display:inline; font-size:.75em; margin-right:5px;}
+			p { font-weight:bold; margin-bottom:0px;}
+			.highlight0 { color:#060; background-color:#C5F7C5; } 
+			.highlight1 { color:#060; background-color:#C5C5F7; }
+			.box { background-color:#EEE; min-height:2em; padding:10px; display:inline-block; margin: auto; margin-bottom:25px; border: solid 1px #CCC; }
+			.output-box { background-color:#fff; width:300px;}
 			.regex { margin-top:0px; font-weight:normal; text-decoration:none} 
-			#errorMsg { color:#F00 } 
+			#error-message { color:#F00 } 
 		</style> 
 	</head>
 	<body> 
 		<div class="box">
 			<label for="pattern">Pattern</label>
-			<input id="pattern" data-bind="value:regexPattern, valueUpdate: 'afterkeydown'" name="regexPattern" placeholder="Enter your regex here."><br/>
-			
-			<label for="stringToTest">String To Test</label>
-			<textarea id="stringToTest" data-bind="value:stringToTest" name="stringToTest" placeholder="Enter your test string here."></textarea>
-			
-			<label for="matchOutput">Raw string, matches in <span class="highlight">green</span></label>
-			<p class="regex" data-bind="html:regexMatch" id="output"></p>
-			
-			<label for="matches">Capture matches</label>
-			<ol data-bind="foreach: regexMatches">
-				<li><p data-bind="text:$data"></p></li>
-			</ol> 
+			<input id="pattern" data-bind="value:regexPattern, valueUpdate:'afterkeydown'" name="regexPattern" placeholder="Enter your regex here.">
+			<div class="options">
+				<p>Options: <span data-bind="text:regexOptions"></span></p>
+				<input type="checkbox" id="opt-global" data-bind="checked:optionGlobal">
+				<label for="opt-global">g</label>
+				<input type="checkbox" id="opt-case" data-bind="checked:optionCase">
+				<label for="opt-case">i</label>
+				<input type="checkbox" id="opt-lines" data-bind="checked:optionLines">
+				<label for="opt-case">m</label>
+			</div>
+			</br>
 
-		</div> 
-		<p data-bind="html:errorMsg" id="errorMsg"></p>
+			<label for="stringToTest">String To Test</label>
+			<textarea id="stringToTest" data-bind="value:stringToTest, valueUpdate:'afterkeydown'" name="stringToTest" placeholder="Enter your test string here."></textarea>
+
+			<!--output--> 
+			<p>Matches (highlighted - hover for index)</p>
+			<div class="box output-box">
+				<div data-bind="highlightedText: { text:stringToTest, matches: regexExecResult(), css: 'highlight'}"></div>
+				<p data-bind="html:errorMsg" id="error-message"></p>
+			</div>
+		</div>
 		<script type="text/javascript">
+			ko.bindingHandlers.highlightedText= { 
+				update: function(element, valueAccessor) {
+			        var options = valueAccessor();
+			        var originalText = ko.utils.unwrapObservable(options.text);
+			        var matches = ko.utils.unwrapObservable(options.matches);
+			        var css = ko.utils.unwrapObservable(options.css);
+			       // if (options.sanitize) {
+			       //     value = $('<div/>').text(originalText).html(); //could do this or something similar to escape HTML before replacement, if there is a risk of HTML injection in this value
+			       // }
+
+			        if (matches && matches.length==0){
+			        	element.innerHTML = originalText;  //return? 
+			        }
+			        else  
+			        { 
+			        	var highlightedString="", startPos=0, replacement=""; 
+			        	for (var i=0; i < matches.length; i++){
+			        		//translate the original text into a new string with the highlighted markup
+			        		//figure out where the last loop iteration left off 
+			        		startPos = matches[i-1] ? matches[i-1].index + matches[i-1].matchedText.length: 0; 
+			        		//build the highlight
+			        		replacement = '<span class="' + css + i%2 + '" title="Index: ' + matches[i].index + '">' + matches[i].matchedText + '</span>';
+			        		var myString = originalText.substring(startPos, matches[i].index) + 
+			        						replacement;
+			        		highlightedString += myString; 
+			        	}
+			        	startPos = matches[matches.length-1].index + matches[matches.length-1].matchedText.length; 
+			        	highlightedString += originalText.substring(startPos, originalText.length);
+			        	element.innerHTML = highlightedString; 
+			        }
+				}    
+			}	
+
+
 			function ViewModel() {
 				var self = this; 
-				self.regexPattern = ko.observable("(abc)(er)"); 
-				self.stringToTest = ko.observable("abceraaefaedavaerabcaeraa"); 
-				self.errorMsg = ko.observable(); 
-				self.regexMatches = ko.observableArray(); 
+				//input fields
+				self.regexPattern = ko.observable("[a-z]at"); 
+				self.stringToTest = ko.observable("This is a sentence about a cat and a bat. Cats appear in this sentence, too, but that first cat won't highlight until you click the 'i' checkbox above."); 
 				
-				self.hasMatches = ko.computed(function() { return self.regexMatches().length > 0 });
-				self.regexMatch = ko.computed(function() { 
-					if (!self.regexPattern() || !self.stringToTest()) {
-						return "...waiting..."; 
-					}
-					//TODO: parse regexPattern on /pattern/modifiers/checkboxes, pass those into the RegExp
-					try { 
-						var rp = new RegExp(self.regexPattern().trim(),"g");
-						var match = rp.exec(self.stringToTest());
-						var replaceHolder = self.stringToTest(); 
-						self.regexMatches(match ? match.slice(1,match.length) : []);
-						//TODO: counter, index the classes/tooltip on hover with match info
-						var counter=1; 
-						ko.utils.arrayForEach(self.regexMatches(), function(item) { 
-							var innerRp = new RegExp("(" + item + ")","g");
-							//TODO: replace flag needs to be checked for not being in the string - auto-gen a next try? 
-							replaceHolder = replaceHolder.replace(innerRp, "*$1|")
-							//repl = repl.replace(innerRp, "<span class='highlight'>$1</span>");
-						})
-						console.log("before "  + replaceHolder); //todo - need greediness check
-						replaceHolder = replaceHolder.replace(/\*(.*)\|/g, "cc" + counter + "$1" + "ff") 
-						console.log("after " + replaceHolder);
-						//var rp = new RegExp("(" + self.regexPattern() + ")","g");
-						//var repl = self.stringToTest().replace(rp,"<span class='highlight'>$1</span>"); 
-						
-						// matched text: match[0]
-    					// match start: match.index
-    					// capturing group n: match[n]
-						
+				//options
+				self.optionGlobal = ko.observable(true);
+				self.optionCase = ko.observable(false); 
+				self.optionLines = ko.observable(false);
 
-						//console.log(match);
-						//self.regexMatches(rp1.exec(self.stringToTest()));
-						//self.regexMatches(self.stringToTest().match(self.regexPattern())); 
-						//TODO: exec, inspect array http://stackoverflow.com/questions/5495071/capture-groups-with-javascript-regex 
+				//options helper
+				self.regexOptions = ko.computed(function () { 
+					return (self.optionGlobal() ? "g" : "") + 
+							(self.optionCase() ? "i" : "") + 
+							(self.optionLines() ? "m" : ""); 
+				}); 
+
+				self.errorMsg = ko.observable(); 
+
+				self.okToRunRegex = function() { 
+					if (!self.regexPattern() || !self.stringToTest()) {
+						return false; 
+					}
+					return true; 
+				}
+
+				//output vars
+				self.regexExecResult = ko.observableArray(); 
+
+				self.processRegex = ko.computed(function() { 
+					if (!self.okToRunRegex()) {
+						return false; 
+					}
+					try { 
+						var pattern = new RegExp(self.regexPattern().trim(), self.regexOptions());
+
 						self.errorMsg(""); 
+
+						var execMatch, matches=[]; 
+						//self.regexExecResult([]); 
+						while (execMatch = pattern.exec(self.stringToTest())){
+							matches.push({matchedText: execMatch[0], index: execMatch.index});
+						}
+						self.regexExecResult(matches);
 					}
 					catch(err){ 
 						self.errorMsg(err.message); 
 					}
-					return replaceHolder; 
-				}, self) ; 
+				});
+					
+			    self.hasCaptures = ko.computed(function() {
+        			return self.regexExecResult() && self.regexExecResult().length> 0; 
+	            }); 
 			}
 			ko.applyBindings(new ViewModel()); 
+					
 		</script> 
 	</body>
 </html>

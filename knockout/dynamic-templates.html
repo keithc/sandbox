@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.1.0/knockout-min.js"></script> 
+		
+		<style>
+		</style> 
+=	</head>
+	<body>
+		<table>
+			<thead><tr data-bind="template:{name:'tableHeader', foreach:templateColumns}"></tr></thead>
+			<tbody data-bind="template:{name:'tableBody', foreach:selectedMenuData}"</tbody> 
+		</table>
+		
+		<script id="tableHeader" type="text/html">
+			<td><span data-bind="text:$data"></span></td>
+		</script>
+		
+		<script id="tableBody" type="text/html">
+			<tr data-bind="foreach: $parent.templateColumns"><td><span data-bind="text:$parent[$data]"></span></td></tr>				
+		</script>
+	
+		<script type="text/javascript">
+			function ViewModel() { 
+				self = this; 
+				self.template = ko.observable("default");
+				self.myData = ko.observableArray();
+				self.templateColumns = ko.computed(function() { 
+					//get the first item in the array, build a list of its object properties to serve as columns //TODO: a way to cache this, maybe an array of [menuItem (key), cachedData (value)]
+					if ((self.myData() != null) && (self.myData()[0] != undefined)) 
+					{
+						var obj = self.myData()[0]; 
+						var props = []; 
+						for (var prop in obj) {
+							props.push(prop); 
+						}
+						return props; 
+					}
+					return [];
+								
+				}, self); 
+					
+		</script> 
+	</body>
+</html>
