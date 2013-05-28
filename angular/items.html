@@ -1,0 +1,124 @@
+<html ng-app>
+<head>
+	<title>Angular test</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="items.css">
+</head>
+<body ng-controller="ItemListCtrl">
+	<ul class="goal-list"> 
+		<li class="goal-item" ng-repeat="item in items">
+			<div class="stretchy-wrapper">
+			<h3>{{item.Title}}</h3>
+		</div>
+		</li>
+	</ul>
+<script type="text/javascript">
+
+var items = [
+     {
+        "Id": 444790,
+        "Title": "In the Flow",
+        "Type": 16,
+        "Frequency": 0,
+        "Status": 1,
+        "Attributes": 28,
+        "TrackingMode": 0,
+        "TargetUrl": "/MyPlan/default.aspx?uid=keithstarbucks#recommendation",
+        "StartDate": "/Date(1368557469000)/",
+        "EndDate": "/Date(253402300799999)/",
+        "Reward": {
+            "Value": null,
+            "MaxCount": 0
+        },
+        "CommentsCount": 0,
+        "ActiveParticipantCount": 0,
+        "BgImageClass": "image-getmoredone",
+        "BgImageSrc": "/images/getmoredone.gif",
+        "LogoThumbnailUrl": "",
+        "Leaderboards": [],
+        "Source": 1,
+        "HtmlDescription": "You may see recommendations when you pick an area to improve or fill out an assessment. To improve <b>In the Flow</b>, go to My Plan and select a goal to track.",
+        "ActivityLog": {
+            "AccountId": 0,
+            "ActivityType": null,
+            "Unit": null,
+            "DailyActivities": null
+        },
+        "Actions": []
+    },
+    {
+        "Id": 444788,
+        "Title": "Nutrition",
+        "Type": 16,
+        "Frequency": 0,
+        "Status": 1,
+        "Attributes": 28,
+        "TrackingMode": 0,
+        "TargetUrl": "/MyPlan/default.aspx?uid=keithstarbucks#recommendation",
+        "StartDate": "/Date(1350923886000)/",
+        "EndDate": "/Date(253402300799999)/",
+        "Reward": {
+            "Value": null,
+            "MaxCount": 0
+        },
+        "CommentsCount": 0,
+        "ActiveParticipantCount": 0,
+        "BgImageClass": "image-nutrition",
+        "BgImageSrc": "/images/nutrition.gif",
+        "LogoThumbnailUrl": "",
+        "Leaderboards": [],
+        "Source": 1,
+        "HtmlDescription": "You may see recommendations when you pick an area to improve or fill out an assessment. To improve <b>Nutrition</b>, go to My Plan and select a goal to track.",
+        "ActivityLog": {
+            "AccountId": 0,
+            "ActivityType": null,
+            "Unit": null,
+            "DailyActivities": null
+        },
+        "Actions": []
+    },
+    {
+        "Id": 47794,
+        "Title": "another test one time challenge",
+        "Type": 4,
+        "Frequency": 1001,
+        "Status": 0,
+        "Attributes": 4,
+        "TrackingMode": 1,
+        "TargetUrl": "/Challenges/47794/default.aspx",
+        "StartDate": "/Date(1367218800000)/",
+        "EndDate": "/Date(1369810800000)/",
+        "Reward": {
+            "Value": "44",
+            "MaxCount": 0
+        },
+        "CommentsCount": 0,
+        "ActiveParticipantCount": 1,
+        "BgImageClass": "image-default",
+        "BgImageSrc": "/Images/item-image-default.jpg",
+        "LogoThumbnailUrl": "/cfs-file.ashx/__key/CommunityServer-Components-PostAttachments/00-00-06-61-07/thumb_5F00_item_2D00_image_2D00_default.jpg",
+        "Leaderboards": [],
+        "Source": 1,
+        "HtmlDescription": "This is the new description. <a class='learn-more' href='/Challenges/47794/default.aspx'>Learn more</a>",
+        "ActivityLog": {
+            "AccountId": 0,
+            "ActivityType": null,
+            "Unit": null,
+            "DailyActivities": null
+        },
+        "Actions": []
+    }       
+]
+
+
+
+
+
+
+function ItemListCtrl($scope) {
+  $scope.items = items;
+}
+</script>
+
+</body>
+</html>
